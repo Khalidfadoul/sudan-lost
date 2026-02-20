@@ -376,14 +376,34 @@
         }
 
         // حذف وإبلاغ
+               // دالة الحذف المطورة والمؤمنة برقم الهاتف والـ PIN
         function deleteReport(id) {
             const item = allReports.find(r => r.id === id);
-            const pinInput = prompt("أدخل رمز PIN المكون من 4 أرقام:");
+            const userData = JSON.parse(localStorage.getItem('sudan_user_data'));
+
+            // الخطوة 1: التحقق من أن المستخدم هو صاحب البلاغ أصلاً بناءً على رقم الهاتف
+            if (!userData || userData.phone !== item.phone) {
+                alert("عذراً! لا يمكنك حذف هذا البلاغ لأنه غير مسجل برقم هاتفك.");
+                return;
+            }
+
+            // الخطوة 2: طلب رمز PIN للتأكيد الإضافي
+            const pinInput = prompt("لتأكيد الحذف، أدخل رمز PIN الخاص بهذا البلاغ:");
+            
             if (pinInput === item.pin) {
-                if(confirm("هل أنت متأكد من حذف البلاغ نهائياً؟")) {
-                    db.ref('reports').child(id).remove().then(() => navigate('pg-home'));
+                if(confirm("هل أنت متأكد من حذف البلاغ نهائياً؟ لا يمكن التراجع عن هذه الخطوة.")) {
+                    db.ref('reports').child(id).remove()
+                    .then(() => {
+                        alert("تم حذف البلاغ بنجاح.");
+                        navigate('pg-home');
+                    })
+                    .catch((error) => {
+                        alert("فشل الحذف: " + error.message);
+                    });
                 }
-            } else alert("الرمز غير صحيح");
+            } else {
+                alert("رمز PIN غير صحيح. يرجى المحاولة مرة أخرى.");
+            }
         }
 
         function reportFraud(id) {
