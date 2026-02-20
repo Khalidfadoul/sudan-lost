@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>مفقودات السودان - النسخة الرسمية 2026</title>
+    <title>مفقودات السودان - النسخة الشاملة 2026</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
@@ -25,7 +26,7 @@
         .btn-submit { width: 100%; padding: 16px; border-radius: 18px; border: none; background: var(--bg); box-shadow: var(--shadow); color: var(--accent); font-weight: 800; cursor: pointer; margin-top: 12px; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .btn-submit:active { box-shadow: var(--inner-shadow); transform: scale(0.98); }
         
-        .report-card { background: var(--bg); padding: 12px; border-radius: 22px; box-shadow: var(--shadow); display: flex; gap: 15px; margin-bottom: 15px; cursor: pointer; }
+        .report-card { background: var(--bg); padding: 12px; border-radius: 22px; box-shadow: var(--shadow); display: flex; gap: 15px; margin-bottom: 15px; cursor: pointer; align-items: center; }
         .report-card img { width: 85px; height: 85px; border-radius: 18px; object-fit: cover; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); }
         
         .badge { padding: 4px 12px; border-radius: 10px; font-size: 11px; font-weight: bold; }
@@ -37,57 +38,51 @@
         .nav-item.active { color: var(--accent); }
         .plus-center { width: 55px; height: 55px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white !important; margin-top: -40px; border: 4px solid var(--bg); font-size: 22px; box-shadow: 0 8px 15px rgba(39, 174, 96, 0.3); }
 
-        /* Chat Styles */
-        #chat-messages {
-    height: calc(100vh - 250px); /* يضبط الطول تلقائياً حسب الشاشة */
-    overflow-y: auto;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-}
-
+        #chat-messages { height: calc(100vh - 250px); overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
         .msg { padding: 12px 16px; border-radius: 18px; max-width: 85%; font-size: 14px; box-shadow: var(--shadow); line-height: 1.5; }
         .msg.me { align-self: flex-start; background: var(--accent); color: white; border-bottom-right-radius: 4px; }
         .msg.them { align-self: flex-end; background: white; color: var(--text); border-bottom-left-radius: 4px; }
 
         #splash { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
         .legal-notice { font-size: 11px; color: var(--danger); font-weight: bold; background: #fff1f1; padding: 10px; border-radius: 12px; margin-top: 10px; border: 1px dashed var(--danger); }
+        
+        input, textarea { width: 100%; padding: 15px; border-radius: 15px; border: none; box-shadow: var(--inner-shadow); background: var(--bg); margin-bottom: 15px; color: var(--text); }
+        input:focus, textarea:focus { outline: 2px solid var(--accent); }
     </style>
 </head>
 <body>
 
     <div id="splash">
-        <i class="fas fa-gavel" style="font-size: 60px; color: var(--accent);"></i>
-        <h2 style="margin-top: 20px;">مفقودات السودان 2026<br><span style="font-size: 14px; color: var(--text-dim);">المنصة الرسمية الموحدة</span></h2>
-        <p style="font-size: 10px; position: absolute; bottom: 30px;">بالتعاون مع الجهات العدلية - إدارة المباحث الجنائية</p>
+        <i class="fas fa-shield-alt" style="font-size: 60px; color: var(--accent);"></i>
+        <h2 style="margin-top: 20px;">مفقودات السودان 2026<br><span style="font-size: 14px; color: var(--text-dim);">المنصة الأمنية الموحدة</span></h2>
+        <p style="font-size: 10px; position: absolute; bottom: 30px;">تحت إشراف السلطات المختصة</p>
     </div>
 
     <div id="onboarding" class="modal-overlay" style="display:none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 9000; display: flex; align-items: center; justify-content: center; padding: 20px;">
         <div class="card" style="max-width: 400px; width: 100%;">
-            <h3 style="text-align:center">تسجيل الدخول الآمن</h3>
-            <p style="font-size: 12px; text-align: center; color: var(--text-dim);">يتم تسجيل رقم الهاتف كمرجع قانوني للبلاغات</p>
-            <input type="text" id="user-name-init" placeholder="الاسم الرباعي كما في الهوية" style="width:100%; padding:15px; border-radius:15px; border:none; box-shadow:var(--inner-shadow); background:var(--bg); margin-bottom:15px;">
-            <input type="tel" id="user-phone-init" placeholder="رقم الهاتف (0xxxxxxxxx)" style="width:100%; padding:15px; border-radius:15px; border:none; box-shadow:var(--inner-shadow); background:var(--bg);">
-            <button class="btn-submit" onclick="saveUserData()">موافقة ودخول</button>
+            <h3 style="text-align:center">التسجيل القانوني</h3>
+            <p style="font-size: 12px; text-align: center; color: var(--text-dim);">يجب إدخال بيانات حقيقية لتجنب الحظر القانوني</p>
+            <input type="text" id="user-name-init" placeholder="الاسم الرباعي الرسمي">
+            <input type="tel" id="user-phone-init" placeholder="رقم الهاتف (0xxxxxxxxx)">
+            <button class="btn-submit" onclick="saveUserData()">موافقة وتسجيل</button>
         </div>
     </div>
 
     <main id="main-app">
         <section id="pg-home" class="page active">
-        <div class="stats-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-    <div class="stat-card" style="background: var(--bg); padding: 15px; border-radius: 20px; text-align: center; box-shadow: var(--inner-shadow);">
-        <h2 id="count-lost" style="color: var(--danger); margin: 0;">0</h2>
-        <span style="font-size: 12px; color: var(--text-dim);">بلاغات مفقودة</span>
-    </div>
-    <div class="stat-card" style="background: var(--bg); padding: 15px; border-radius: 20px; text-align: center; box-shadow: var(--inner-shadow);">
-        <h2 id="count-found" style="color: var(--accent); margin: 0;">0</h2>
-        <span style="font-size: 12px; color: var(--text-dim);">بلاغات موجودة</span>
-    </div>
-</div>
-
+            <div class="stats-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                <div class="stat-card" style="background: var(--bg); padding: 15px; border-radius: 20px; text-align: center; box-shadow: var(--inner-shadow);">
+                    <h2 id="count-lost" style="color: var(--danger); margin: 0;">0</h2>
+                    <span style="font-size: 12px; color: var(--text-dim);">مفقود</span>
+                </div>
+                <div class="stat-card" style="background: var(--bg); padding: 15px; border-radius: 20px; text-align: center; box-shadow: var(--inner-shadow);">
+                    <h2 id="count-found" style="color: var(--accent); margin: 0;">0</h2>
+                    <span style="font-size: 12px; color: var(--text-dim);">موجود</span>
+                </div>
+            </div>
             <div class="search-wrapper" style="background:var(--bg); padding:15px; border-radius:50px; box-shadow:var(--inner-shadow); display:flex; align-items:center; gap:10px; margin-bottom:20px;">
                 <i class="fas fa-search" style="color:var(--text-dim)"></i>
-                <input type="text" placeholder="بحث في السجلات الرسمية..." style="border:none; background:transparent; width:100%;" oninput="filterFeed(this.value)">
+                <input type="text" placeholder="بحث بالاسم أو النوع..." style="margin-bottom:0; box-shadow:none;" oninput="filterFeed(this.value)">
             </div>
             <div id="home-feed"></div>
         </section>
@@ -98,104 +93,74 @@
 
         <section id="pg-profile" class="page">
             <div class="card" style="text-align: center;">
-                <h3 class="u-name">...</h3>
+                <h3 class="u-name">جاري التحميل...</h3>
                 <p id="u-phone-display" style="color:var(--text-dim);"></p>
-                <div style="font-size: 10px; color: var(--accent); border: 1px solid var(--accent); padding: 5px; border-radius: 10px;">هوية موثقة رقمياً</div>
+                <div style="font-size: 10px; color: var(--accent); border: 1px solid var(--accent); padding: 5px; border-radius: 10px; display:inline-block;">هوية موثقة رقمياً</div>
             </div>
-
-            <button class="btn-submit" onclick="showMyReports()"><i class="fas fa-folder-open"></i> سجل بلاغاتي</button>
-           <div class="nav-item" onclick="loadMyInbox(this)"> <i class="fas fa-comments"></i><br>الرسائل</div>
-
+            <button class="btn-submit" onclick="showMyReports()"><i class="fas fa-folder-open"></i> إدارة بلاغاتي</button>
             <div class="card" style="margin-top: 25px; background: #fff;">
-                <h4 style="margin: 0 0 10px 0; color: var(--danger);"><i class="fas fa-balance-scale"></i> التنبيه القانوني</h4>
-                <p style="font-size: 12px; line-height: 1.6; margin: 0;">
-                    بموجب قانون المعلوماتية، تخضع كافة البيانات المنشورة للرقابة. يتم تزويد <b>إدارة المباحث الجنائية</b> بنسخة دورية من البلاغات للتحقق من الأغراض المسروقة والمفقودة.
-                </p>
-                <button class="btn-submit" style="font-size: 12px; color: var(--text);" onclick="navigate('pg-legal')">عرض اتفاقية المسؤولية الكاملة</button>
+                <h4 style="margin: 0 0 10px 0; color: var(--danger);"><i class="fas fa-balance-scale"></i> تنبيه المسؤولية</h4>
+                <p style="font-size: 12px; line-height: 1.6; margin: 0;">المنصة مربوطة بقاعدة بيانات المباحث. أي استخدام خاطئ يعرض صاحب الرقم للملاحقة.</p>
+                <button class="btn-submit" style="font-size: 12px;" onclick="navigate('pg-disclaimer')">عرض بنود الاستخدام</button>
             </div>
-
             <button class="btn-submit" style="color:var(--danger); box-shadow:none;" onclick="logout()">تسجيل الخروج</button>
         </section>
 
-        <section id="pg-legal" class="page">
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px"><i class="fas fa-arrow-right" onclick="navigate('pg-profile')"></i> <h2>المسؤولية القانونية</h2></div>
+        <section id="pg-disclaimer" class="page">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px"><i class="fas fa-arrow-right" onclick="navigate('pg-profile')"></i> <h2>اتفاقية الاستخدام</h2></div>
             <div class="card" style="font-size: 13px; line-height: 1.8;">
-                <p><b>أولاً:</b> يقر المستخدم بأن كل معلومة يدلي بها هي تحت مسؤوليته الشخصية والجنائية.</p>
-                <p><b>ثانياً:</b> المنصة مرتبطة بنظام أرشفة يسهل مراجعته من قبل الجهات العدلية في حالات البلاغات الكاذبة (المادة 97 من القانون الجنائي).</p>
-                <p><b>ثالثاً:</b> يمنع منعاً باتاً نشر صور الأسلحة، العملات المزيفة، أو أي مواد محظورة قانوناً.</p>
-                <p><b>رابعاً:</b> زر "التبليغ عن احتيال" يؤدي لمراجعة البلاغ وحظر رقم الناشر نهائياً وتعميمه كجهة غير موثوقة.</p>
+                <p><b>1. صحة المعلومات:</b> أتعهد بصحة البلاغ.</p>
+                <p><b>2. المبالغ المالية:</b> يمنع دفع مبالغ قبل معاينة المفقود.</p>
+                <p><b>3. الخصوصية:</b> يتم مشاركة رقمك فقط مع من تتواصل معه.</p>
             </div>
+            <button class="btn-submit" onclick="navigate('pg-home')" style="background:var(--accent); color:white;">أوافق على الشروط</button>
         </section>
 
         <section id="pg-form" class="page">
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px"><i class="fas fa-arrow-right" onclick="navigate('pg-home')"></i> <h2>إضافة بلاغ رسمي</h2></div>
-            <div class="card" style="height:220px; display:flex; align-items:center; justify-content:center; position:relative;" onclick="document.getElementById('file-input').click()">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px"><i class="fas fa-arrow-right" onclick="navigate('pg-home')"></i> <h2>بلاغ جديد</h2></div>
+            <div class="card" style="height:200px; display:flex; align-items:center; justify-content:center; overflow:hidden;" onclick="document.getElementById('file-input').click()">
                 <img id="img-preview" style="width:100%; height:100%; object-fit:contain; display:none">
-                <div id="upload-placeholder" style="text-align:center;"><i class="fas fa-camera-retro" style="font-size:40px; color:var(--accent)"></i><br>ارفق صورة الغرض</div>
+                <div id="upload-placeholder" style="text-align:center;"><i class="fas fa-camera" style="font-size:40px; color:var(--accent)"></i><br>ارفق صورة واضحة</div>
                 <input type="file" id="file-input" hidden onchange="handleImageSelection(event)">
             </div>
-            <div class="legal-notice">إقرار: أتعهد بأن هذا البلاغ صحيح وأتحمل المسؤولية القانونية تجاهه.</div>
-            <input type="text" id="inp-title" placeholder="عنوان البلاغ (مثال: حقيبة مستندات)" style="width:100%; padding:15px; margin-top:15px; border-radius:12px; border:none; box-shadow:var(--inner-shadow); background:var(--bg);">
-            <textarea id="inp-desc" placeholder="وصف دقيق (المكان، الزمان، علامات مميزة)..." style="width:100%; padding:15px; height:120px; margin-top:15px; border-radius:12px; border:none; box-shadow:var(--inner-shadow); background:var(--bg);"></textarea>
-            <input type="number" id="inp-pin" placeholder="رمز PIN للحماية (4 أرقام)" style="width:100%; padding:15px; margin-top:15px; border-radius:12px; border:none; box-shadow:var(--inner-shadow); background:var(--bg);">
-            <div class="legal-disclaimer-box" style="background: #fff5f5; border: 1px solid #ffcccc; padding: 15px; border-radius: 15px; margin: 15px 0;">
-    <h4 style="color: #c0392b; margin-top: 0; font-size: 14px;"><i class="fas fa-balance-scale"></i> إخلاء مسؤولية قانوني</h4>
-    <p style="font-size: 11px; line-height: 1.5; color: #666; margin-bottom: 0;">
-        بضغطك على "تأكيد ونشر"، تقر بأنك المالك الشرعي أو واجد الغرض، وتوافق على مشاركة موقعك ورقم هاتفك مع <b>إدارة المباحث الجنائية</b> في حال تم التبليغ عن هذا المنشور كبلاغ كاذب. المنصة غير مسؤولة عن أي تعاملات مالية تتم بين المستخدمين.
-    </p>
-</div>
-
-            <button class="btn-submit" style="background:var(--accent); color:white;" onclick="publishReport()">تأكيد ونشر رسمي</button>
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <button id="type-lost" onclick="setFormType('lost')" class="btn-submit" style="margin:0; background:var(--danger); color:white;">مفقود</button>
+                <button id="type-found" onclick="setFormType('found')" class="btn-submit" style="margin:0; background:var(--bg); color:var(--accent);">موجود</button>
+            </div>
+            <input type="text" id="inp-title" placeholder="عنوان البلاغ (مثال: مفاتيح سيارة)">
+            <textarea id="inp-desc" placeholder="وصف دقيق للمكان والزمان والعلامات المميزة..."></textarea>
+            <input type="number" id="inp-pin" placeholder="رمز PIN للحذف (4 أرقام)">
+            <div class="legal-notice">إقرار: أنا مسؤول مسؤولية كاملة عن صحة هذا البلاغ أمام القانون.</div>
+            <button class="btn-submit" style="background:var(--accent); color:white;" onclick="publishReport()">نشر البلاغ الآن</button>
         </section>
 
-<section id="pg-disclaimer" class="page">
-    <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px">
-        <i class="fas fa-arrow-right" onclick="navigate('pg-profile')"></i> 
-        <h2>اتفاقية الاستخدام وإخلاء المسؤولية</h2>
-    </div>
-    
-    <div class="card" style="font-size: 13px; line-height: 1.8; text-align: justify;">
-        <h4 style="color: var(--danger); text-align: center;">إقرار ومسؤولية قانونية</h4>
-        <p><b>1. طبيعة المنصة:</b> هذه المنصة هي وسيط تقني لتسهيل العثور على المفقودات، وليست جهة تنفيذية. كافة البيانات المدخلة تعبر عن أصحابها.</p>
-        
-        <p><b>2. المسؤولية الجنائية:</b> يقر المستخدم بأن أي بلاغ كاذب أو تضليلي يعرضه للمساءلة تحت المادة (97) من القانون الجنائي السوداني "إعطاء معلومات كاذبة".</p>
-        
-        <p><b>3. الخصوصية والأمن:</b> يوافق المستخدم على مشاركة بيانات الاتصال الخاصة به (الهاتف، الاسم) مع الأطراف الأخرى لغرض استرداد المفقودات، وللجهات العدلية في حال طلبها رسمياً.</p>
-        
-        <p><b>4. المعاملات المالية:</b> تخلي إدارة التطبيق مسؤوليتها عن أي مكافآت مالية يتم الاتفاق عليها بين الأفراد، وتحذر من دفع أي مبالغ قبل معاينة الغرض المفقود واستلامه في مكان آمن.</p>
-        
-        <p><b>5. الرقابة:</b> للمسؤولين الحق في حذف أي بلاغ يحتوي على محتوى غير لائق أو يمس أمن الدولة أو ينتهك خصوصية الآخرين دون الرجوع للناشر.</p>
-    </div>
-    
-    <button class="btn-submit" onclick="navigate('pg-home')" style="background: var(--accent); color: white;">أوافق على كافة الشروط</button>
-</section>
-
         <section id="pg-chat" class="page">
-            <div id="chat-header" style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
+            <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
                 <i class="fas fa-arrow-right" onclick="navigate('pg-home')"></i>
-                <h4 id="chat-title" style="margin:0">الدردشة الآمنة</h4>
+                <h4 id="chat-title" style="margin:0">دردشة</h4>
             </div>
             <div id="chat-messages"></div>
             <div style="display:flex; gap:10px; margin-top:10px;">
-                <input type="text" id="chat-input" placeholder="اكتب رسالة..." style="flex:1; padding:15px; border-radius:12px; border:none; box-shadow:var(--inner-shadow); background:var(--bg);">
-                <button onclick="sendMessage()" style="width:50px; border-radius:12px; border:none; background:var(--accent); color:white;"><i class="fas fa-paper-plane"></i></button>
+                <input type="text" id="chat-input" placeholder="اكتب رسالتك..." style="margin-bottom:0;">
+                <button onclick="sendMessage()" style="width:60px; border-radius:15px; border:none; background:var(--accent); color:white;"><i class="fas fa-paper-plane"></i></button>
             </div>
         </section>
 
         <section id="pg-my-list" class="page">
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px"><i class="fas fa-arrow-right" onclick="navigate('pg-profile')"></i> <h2>سجلاتي</h2></div>
-           <div id="my-list-container" style="padding: 10px;"></div>
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px"><i class="fas fa-arrow-right" onclick="navigate('pg-profile')"></i> <h2>السجلات</h2></div>
+            <div id="my-list-container"></div>
         </section>
     </main>
 
     <nav class="bottom-nav">
         <div class="nav-item active" onclick="navigate('pg-home', this)"><i class="fas fa-home"></i><br>الرئيسية</div>
-        <div class="nav-item" onclick="loadMyInbox()"><i class="fas fa-comments"></i><br>الدردشة</div>
-        <div class="nav-item plus-center" onclick="openForm('lost')"><i class="fas fa-plus"></i></div>
+        <div class="nav-item" onclick="loadMyInbox(this)"><i class="fas fa-comments"></i><br>الرسائل</div>
+        <div class="nav-item plus-center" onclick="navigate('pg-form')"><i class="fas fa-plus"></i></div>
         <div class="nav-item" onclick="navigate('pg-profile', this)"><i class="fas fa-shield-alt"></i><br>الأمان</div>
     </nav>
 
     <script>
+        // تكوين Firebase (استبدلها ببياناتك إذا كانت مختلفة)
         const firebaseConfig = {
             apiKey: "AIzaSyCybHxby_BWoisXHKg5PYEzNgRosBvH66Y",
             authDomain: "mafgoodsudan-b76ab.firebaseapp.com",
@@ -211,6 +176,7 @@
         let currentType = 'lost';
         let currentRoomId = null;
 
+        // نظام التنقل
         function navigate(pageId, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
@@ -221,40 +187,23 @@
             window.scrollTo(0,0);
         }
 
-        // --- جلب البيانات ---
+        // تحميل البيانات من Firebase
         function loadData() {
-    db.ref('reports').on('value', (snap) => {
-        allReports = [];
-        let lostCount = 0;
-        let foundCount = 0;
-        
-        snap.forEach(child => { 
-            const data = child.val();
-            allReports.push({ id: child.key, ...data });
-            
-            // عد الإحصائيات
-            if(data.type === 'lost') lostCount++;
-            else if(data.type === 'found') foundCount++;
-        });
+            db.ref('reports').on('value', (snap) => {
+                allReports = [];
+                let lost = 0, found = 0;
+                snap.forEach(child => { 
+                    const data = child.val();
+                    allReports.push({ id: child.key, ...data });
+                    data.type === 'lost' ? lost++ : found++;
+                });
+                document.getElementById('count-lost').innerText = lost;
+                document.getElementById('count-found').innerText = found;
+                renderFeed(allReports.slice().reverse());
+            });
+        }
 
-        // تحديث الأرقام في الواجهة
-        document.getElementById('count-lost').innerText = lostCount;
-        document.getElementById('count-found').innerText = foundCount;
-        
-        allReports.reverse();
-        renderFeed(allReports);
-    });
-}
-
-function checkUser() {
-    const user = localStorage.getItem('sudan_user_data');
-    if (!user) {
-        document.getElementById('onboarding').style.display = 'flex';
-        return false;
-    }
-    return JSON.parse(user);
-}
-
+        // عرض البلاغات في الرئيسية
         function renderFeed(data) {
             let html = "";
             data.forEach(item => {
@@ -268,163 +217,125 @@ function checkUser() {
                     </div>
                 </div>`;
             });
-            document.getElementById('home-feed').innerHTML = html || "<p style='text-align:center'>لا توجد بلاغات حالياً</p>";
+            document.getElementById('home-feed').innerHTML = html || "<p style='text-align:center'>لا يوجد بلاغات</p>";
         }
 
-        // --- التفاصيل مع زر الإبلاغ عن احتيال ---
+        // عرض تفاصيل البلاغ
         function viewDetails(id) {
             const item = allReports.find(r => r.id === id);
             document.getElementById('details-view').innerHTML = `
-                <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px"><i class="fas fa-arrow-right" onclick="navigate('pg-home')"></i> <h2>تفاصيل البلاغ</h2></div>
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px"><i class="fas fa-arrow-right" onclick="navigate('pg-home')"></i> <h2>التفاصيل</h2></div>
                 <div class="card" style="padding:0; overflow:hidden;"><img src="${item.img}" style="width:100%; max-height:350px; object-fit:contain; background:#000"></div>
                 <div class="card">
                     <div style="display:flex; justify-content:space-between; align-items:center">
                         <span class="badge ${item.type==='lost'?'badge-lost':'badge-found'}">${item.type==='lost'?'مفقود':'موجود'}</span>
-                        <button onclick="reportFraud('${id}')" style="background:none; border:none; color:var(--danger); font-size:11px; font-weight:bold;"><i class="fas fa-exclamation-triangle"></i> إبلاغ عن احتيال</button>
+                        <button onclick="reportFraud('${id}')" style="border:none; background:none; color:var(--danger); font-size:11px; font-weight:bold;"><i class="fas fa-exclamation-triangle"></i> إبلاغ</button>
                     </div>
                     <h3 style="margin: 15px 0 10px;">${item.title}</h3>
-                    <p style="user-select:text; font-size:14px; line-height:1.6;">${item.desc}</p>
+                    <p style="font-size:14px; line-height:1.6;">${item.desc}</p>
                 </div>
-               <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
-    <button onclick="contactAction('tel', '${item.phone}')" class="btn-submit" style="background:var(--accent); color:white; font-size:12px;">
-        <i class="fas fa-phone"></i> اتصال
-    </button>
-    
-    <button onclick="contactAction('wa', '${item.phone}')" class="btn-submit" style="background:#25D366; color:white; font-size:12px;">
-        <i class="fab fa-whatsapp"></i> واتساب
-    </button>
-    
-    <button onclick="startChat('${id}')" class="btn-submit" style="background:var(--text); color:white; font-size:12px;">
-        <i class="fas fa-comments"></i> دردشة
-    </button>
-</div>
-
-                <button onclick="deleteReport('${id}')" style="width:100%; border:none; background:none; color:var(--text-dim); margin-top:30px; font-size:12px;">حذف بلاغي (يتطلب PIN)</button>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
+                    <button onclick="contactAction('tel', '${item.phone}')" class="btn-submit" style="background:var(--accent); color:white; font-size:11px;"><i class="fas fa-phone"></i> اتصال</button>
+                    <button onclick="contactAction('wa', '${item.phone}')" class="btn-submit" style="background:#25D366; color:white; font-size:11px;"><i class="fab fa-whatsapp"></i> واتساب</button>
+                    <button onclick="startChat('${id}')" class="btn-submit" style="background:var(--text); color:white; font-size:11px;"><i class="fas fa-comments"></i> دردشة</button>
+                </div>
+                <button onclick="deleteReport('${id}')" style="width:100%; border:none; background:none; color:var(--text-dim); margin-top:30px; font-size:10px;">حذف بلاغي (يتطلب PIN)</button>
             `;
             navigate('pg-details');
         }
 
-        // --- نظام الإبلاغ عن الاحتيال ---
-        function reportFraud(reportId) {
-            const reason = prompt("يرجى ذكر سبب التبليغ عن هذا البلاغ (بلاغ كاذب، صورة مسيئة، احتيال مالي):");
-            if (reason) {
-                db.ref('fraud_reports').push({
-                    reportId: reportId,
-                    reason: reason,
-                    reporter: JSON.parse(localStorage.getItem('sudan_user_data')).phone,
-                    timestamp: Date.now()
-                }).then(() => {
-                    alert("شكرًا لك. تم إرسال التقرير للإدارة وللجهات العدلية للمراجعة.");
-                });
+        // وظائف الاتصال
+        function contactAction(type, phone) {
+            let cleanPhone = phone.replace(/\s/g, '');
+            if (type === 'tel') window.location.href = "tel:" + cleanPhone;
+            else {
+                let wa = cleanPhone.startsWith('0') ? "249" + cleanPhone.substring(1) : cleanPhone;
+                window.location.href = "https://wa.me/" + wa;
             }
         }
 
-        // --- نظام الدردشة المحسن ---
-       function startChat(reportId) {
-    const item = allReports.find(r => r.id === reportId);
-    const user = JSON.parse(localStorage.getItem('sudan_user_data'));
-    
-    if (!user) return alert("يرجى تسجيل بياناتك أولاً من صفحة الأمان");
-    if (user.phone === item.phone) return alert("هذا بلاغك الخاص، لا يمكنك مراسلة نفسك.");
-
-    // توحيد المعرف: ترتيب الأرقام لضمان الوصول لنفس الغرفة دائماً
-    const ids = [user.phone, item.phone].sort();
-    const roomId = `chat_${reportId}_${ids[0]}_${ids[1]}`;
-    
-    openChatBox(roomId, item.title);
-}
-
+        // نظام الدردشة المطور
+        function startChat(reportId) {
+            const item = allReports.find(r => r.id === reportId);
+            const user = JSON.parse(localStorage.getItem('sudan_user_data'));
+            if (!user) return alert("سجل أولاً");
+            if (user.phone === item.phone) return alert("هذا بلاغك");
+            
+            const ids = [user.phone, item.phone].sort();
+            const roomId = `chat_${reportId}_${ids[0]}_${ids[1]}`;
+            openChatBox(roomId, item.title);
+        }
 
         function openChatBox(roomId, title) {
             currentRoomId = roomId;
             const user = JSON.parse(localStorage.getItem('sudan_user_data'));
             document.getElementById('chat-title').innerText = title;
             navigate('pg-chat');
+            
+            const box = document.getElementById('chat-messages');
+            box.innerHTML = `<div style="background:#fff3cd; padding:10px; font-size:11px; border-radius:10px; margin-bottom:10px; border:1px solid #ffeeba; text-align:center;">تحذير: لا تحول أموالاً تحت أي ظرف قبل الاستلام يداً بيد.</div>`;
 
             db.ref('chats/' + roomId).on('value', (snap) => {
-                let html = "";
+                let html = box.firstChild.outerHTML; 
                 snap.forEach(c => {
                     const m = c.val();
                     html += `<div class="msg ${m.sender === user.phone ? 'me' : 'them'}">${m.text}</div>`;
                 });
-                const box = document.getElementById('chat-messages');
                 box.innerHTML = html;
                 box.scrollTop = box.scrollHeight;
             });
         }
 
         function sendMessage() {
-    const input = document.getElementById('chat-input');
-    const text = input.value.trim();
-    const user = JSON.parse(localStorage.getItem('sudan_user_data'));
-
-    if (!text || !currentRoomId) return;
-
-    db.ref('chats/' + currentRoomId).push({
-        sender: user.phone,
-        senderName: user.name,
-        text: text,
-        timestamp: Date.now()
-    }).then(() => {
-        input.value = ""; // مسح الحقل بعد الإرسال
-    }).catch((err) => {
-        alert("خطأ في الإرسال: تأكد من اتصال الإنترنت");
-    });
-}
-
-
-       function loadMyInbox(el) {
-    const user = JSON.parse(localStorage.getItem('sudan_user_data'));
-    if(!user) return alert("سجل دخولك أولاً");
-    
-    navigate('pg-my-list', el); // توجيه المستخدم لصفحة القائمة
-    
-    db.ref('chats').once('value', (snap) => {
-        let html = "";
-        let foundAny = false;
-        
-        snap.forEach(room => {
-            if (room.key.includes(user.phone)) {
-                foundAny = true;
-                const messages = Object.values(room.val());
-                const lastMsg = messages[messages.length - 1];
-                
-                html += `
-                <div class="report-card" onclick="openChatBox('${room.key}', 'محادثة مستمرة')" style="border-right: 5px solid var(--accent);">
-                    <div style="flex:1">
-                        <h4 style="margin:0">${lastMsg.senderName || 'مستخدم'}</h4>
-                        <p style="margin:5px 0; font-size:12px; color:var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            ${lastMsg.text}
-                        </p>
-                    </div>
-                    <i class="fas fa-chevron-left" style="align-self:center; color:var(--accent)"></i>
-                </div>`;
-            }
-        });
-        
-        document.getElementById('my-list-container').innerHTML = foundAny ? html : "<p style='text-align:center; padding:20px;'>لا توجد محادثات نشطة حالياً</p>";
-    });
-}
-
-
-        // --- عمليات البلاغات ---
-        function publishReport() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
             const user = JSON.parse(localStorage.getItem('sudan_user_data'));
-            const title = document.getElementById('inp-title').value;
-            const desc = document.getElementById('inp-desc').value;
-            const pin = document.getElementById('inp-pin').value;
-            
-            if(!title || !base64Image || pin.length < 4) return alert("يرجى إكمال كافة الحقول ورمز PIN");
-
-            const reportData = {
-                title, desc, phone: user.phone, pin, img: base64Image, type: currentType, timestamp: Date.now(),
-                status: "official_record"
-            };
-
-            db.ref('reports').push(reportData).then(() => {
-                alert("تم النشر بنجاح. هذا البلاغ أصبح جزءاً من سجلات المنصة الرسمية.");
-                location.reload();
+            if (!text || !currentRoomId) return;
+            db.ref('chats/' + currentRoomId).push({ 
+                sender: user.phone, 
+                senderName: user.name, 
+                text: text, 
+                timestamp: Date.now() 
             });
+            input.value = "";
+        }
+
+        // صندوق الوارد
+        function loadMyInbox(el) {
+            const user = JSON.parse(localStorage.getItem('sudan_user_data'));
+            if(!user) return;
+            document.getElementById('my-list-container').innerHTML = "<p style='text-align:center'>جاري التحميل...</p>";
+            navigate('pg-my-list', el);
+            db.ref('chats').on('value', (snap) => {
+                let html = "";
+                let found = false;
+                snap.forEach(room => {
+                    if (room.key.includes(user.phone)) {
+                        found = true;
+                        const msgs = Object.values(room.val());
+                        const last = msgs[msgs.length-1];
+                        const partner = last.sender === user.phone ? "محادثة" : last.senderName;
+                        html += `
+                        <div class="report-card" onclick="openChatBox('${room.key}', '${partner}')">
+                            <div style="flex:1">
+                                <h4>${partner}</h4>
+                                <p style="font-size:12px; color:var(--text-dim); text-overflow:ellipsis; overflow:hidden; white-space:nowrap; max-width:200px;">${last.text}</p>
+                            </div>
+                            <i class="fas fa-chevron-left"></i>
+                        </div>`;
+                    }
+                });
+                document.getElementById('my-list-container').innerHTML = found ? html : "<p style='text-align:center; padding:20px;'>لا توجد رسائل</p>";
+            });
+        }
+
+        // معالجة النموذج
+        function setFormType(type) {
+            currentType = type;
+            document.getElementById('type-lost').style.background = (type === 'lost') ? 'var(--danger)' : 'var(--bg)';
+            document.getElementById('type-lost').style.color = (type === 'lost') ? 'white' : 'var(--danger)';
+            document.getElementById('type-found').style.background = (type === 'found') ? 'var(--accent)' : 'var(--bg)';
+            document.getElementById('type-found').style.color = (type === 'found') ? 'white' : 'var(--accent)';
         }
 
         function handleImageSelection(event) {
@@ -448,37 +359,46 @@ function checkUser() {
             reader.readAsDataURL(file);
         }
 
+        function publishReport() {
+            const user = JSON.parse(localStorage.getItem('sudan_user_data'));
+            const title = document.getElementById('inp-title').value.trim();
+            const desc = document.getElementById('inp-desc').value.trim();
+            const pin = document.getElementById('inp-pin').value;
+            
+            if(!title || !base64Image || pin.length < 4) return alert("يرجى إكمال البيانات والصورة و PIN");
+            
+            db.ref('reports').push({
+                title, desc, phone: user.phone, pin, img: base64Image, type: currentType, timestamp: Date.now()
+            }).then(() => {
+                alert("تم النشر بنجاح");
+                location.reload();
+            });
+        }
+
+        // حذف وإبلاغ
         function deleteReport(id) {
             const item = allReports.find(r => r.id === id);
-            const pin = prompt("أدخل رمز PIN المكون من 4 أرقام لتأكيد الحذف:");
-            if (pin === item.pin) {
-                if(confirm("هل تريد حذف البلاغ من السجلات العامة؟")) {
-                    db.ref('reports').child(id).remove().then(() => { alert("تم الحذف."); navigate('pg-home'); });
+            const pinInput = prompt("أدخل رمز PIN المكون من 4 أرقام:");
+            if (pinInput === item.pin) {
+                if(confirm("هل أنت متأكد من حذف البلاغ نهائياً؟")) {
+                    db.ref('reports').child(id).remove().then(() => navigate('pg-home'));
                 }
-            } else { alert("رمز PIN غير صحيح."); }
+            } else alert("الرمز غير صحيح");
         }
 
-        function filterFeed(val) {
-            const term = val.toLowerCase();
-            const filtered = allReports.filter(r => r.title.toLowerCase().includes(term) || r.desc.toLowerCase().includes(term));
-            renderFeed(filtered);
+        function reportFraud(id) {
+            const reason = prompt("ما هو سبب الإبلاغ؟");
+            if (reason) {
+                db.ref('fraud').push({ reportId: id, reason, reporter: JSON.parse(localStorage.getItem('sudan_user_data')).phone });
+                alert("شكراً، تم إرسال التقرير للمراجعة.");
+            }
         }
 
-        function showMyReports() {
-            const user = JSON.parse(localStorage.getItem('sudan_user_data'));
-            const myData = allReports.filter(r => r.phone === user.phone);
-            let html = "";
-            myData.forEach(item => {
-                html += `<div class="report-card" onclick="viewDetails('${item.id}')"><img src="${item.img}"><div><h4>${item.title}</h4></div></div>`;
-            });
-            document.getElementById('my-list-container').innerHTML = html || "<p style='text-align:center'>ليس لديك بلاغات</p>";
-            navigate('pg-my-list');
-        }
-
+        // إدارة المستخدم
         function saveUserData() {
             const name = document.getElementById('user-name-init').value.trim();
             const phone = document.getElementById('user-phone-init').value.trim();
-            if(name.length < 10 || phone.length < 10) return alert("يرجى إدخال الاسم الرباعي ورقم هاتف صحيح");
+            if(name.length < 10 || phone.length < 10) return alert("أدخل اسمك الرباعي ورقم هاتف صحيح");
             localStorage.setItem('sudan_user_data', JSON.stringify({name, phone}));
             document.getElementById('onboarding').style.display = 'none';
             updateProfileUI();
@@ -492,27 +412,28 @@ function checkUser() {
             }
         }
 
-        function openForm(type) { currentType = type; navigate('pg-form'); }
-        function logout() { if(confirm("تسجيل خروج؟")) { localStorage.clear(); location.reload(); } }
-        function contactAction(type, phone) {
-    // تنظيف رقم الهاتف من أي مسافات أو رموز
-    let cleanPhone = phone.replace(/\s/g, '');
-    
-    if (type === 'tel') {
-        window.location.href = "tel:" + cleanPhone;
-    } else if (type === 'wa') {
-        // تحويل الرقم لصيغة دولية سودانية إذا بدأ بـ 0
-        let waPhone = cleanPhone;
-        if (waPhone.startsWith('0')) {
-            waPhone = "249" + waPhone.substring(1);
+        function showMyReports() {
+            const user = JSON.parse(localStorage.getItem('sudan_user_data'));
+            const myData = allReports.filter(r => r.phone === user.phone);
+            let html = "";
+            myData.forEach(item => {
+                html += `<div class="report-card" onclick="viewDetails('${item.id}')"><img src="${item.img}"><div><h4>${item.title}</h4></div></div>`;
+            });
+            document.getElementById('my-list-container').innerHTML = html || "<p style='text-align:center'>لا يوجد بلاغات منشورة لك.</p>";
+            navigate('pg-my-list');
         }
-        window.location.href = "https://wa.me/" + waPhone;
-    }
-}
+
+        function filterFeed(val) {
+            const term = val.toLowerCase();
+            const filtered = allReports.filter(r => r.title.toLowerCase().includes(term) || r.desc.toLowerCase().includes(term));
+            renderFeed(filtered);
+        }
+
+        function logout() { if(confirm("خروج؟")) { localStorage.clear(); location.reload(); } }
 
         window.onload = () => {
             loadData();
-            setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 2500);
+            setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 2000);
             if(!localStorage.getItem('sudan_user_data')) document.getElementById('onboarding').style.display = 'flex';
             else updateProfileUI();
         };
