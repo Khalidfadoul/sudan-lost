@@ -398,6 +398,8 @@ body {
                 <p id="u-phone-display" style="color: var(--text-dim);"></p>
             </div>
             <button class="btn-submit" onclick="showMyReports()"><i class="fas fa-list"></i> بلاغاتي الشخصية</button>
+            <button class="btn-submit" onclick="loadMyInbox()"><i class="fas fa-envelope"></i> رسائلي والردود</button>
+
             <button class="btn-submit" style="color:var(--danger)" onclick="logout()">تسجيل الخروج</button>
         </section>
 
@@ -662,21 +664,35 @@ body {
 
         // --- الدردشة ---
         // دالة لبدء الدردشة أو الدخول إليها
+// --- تحديث نظام الدردشة المطور ---
+
+// 1. دالة لبدء دردشة جديدة (من صفحة التفاصيل)
 function startChat(reportId) {
     const item = allReports.find(r => r.id === reportId);
     const user = JSON.parse(localStorage.getItem('sudan_user_data'));
     
-    // تحديد معرف الغرفة: يجب أن يكون ثابتاً بين هذين الشخصين لهذا البلاغ
-    // سنستخدم معرف البلاغ + رقم هاتف صاحب البلاغ + رقم هاتف المراسل
-    // لكن الأسهل حالياً: reportId + رقم هاتف الشخص الذي بدأ الدردشة
-    const roomId = `${reportId}_${item.phone}_${user.phone}`;
-    
-    document.getElementById('chat-with-name').innerText = "دردشة: " + item.title;
+    if (user.phone === item.phone) {
+        alert("هذا بلاغك، يمكنك رؤية الردود من صفحة 'حسابي' قريباً");
+        return;
+    }
+
+    // معرف غرفة فريد يجمع الطرفين
+    const roomId = `chat_${reportId}_${item.phone}_${user.phone}`;
+    openChatBox(roomId, item.title);
+}
+
+// 2. دالة لفتح واجهة الدردشة وتحميل الرسائل
+function openChatBox(roomId, title) {
+    const user = JSON.parse(localStorage.getItem('sudan_user_data'));
+    document.getElementById('chat-with-name').innerText = title;
     navigate('pg-chat-view');
 
-    // إعداد زر الإرسال
-    document.getElementById('send-btn').onclick = () => {
-        const text = document.getElementById('chat-input').value.trim();
+    const sendBtn = document.getElementById('send-btn');
+    const chatInput = document.getElementById('chat-input');
+
+    // إرسال رسالة
+    sendBtn.onclick = () => {
+        const text = chatInput.value.trim();
         if (!text) return;
         
         db.ref('chats/' + roomId).push({
@@ -685,10 +701,10 @@ function startChat(reportId) {
             text: text,
             timestamp: Date.now()
         });
-        document.getElementById('chat-input').value = "";
+        chatInput.value = "";
     };
 
-    // الاستماع للرسائل في الوقت الفعلي
+    // الاستماع للرسائل
     if (currentChatRef) currentChatRef.off();
     currentChatRef = db.ref('chats/' + roomId);
     currentChatRef.on('value', (snap) => {
@@ -696,17 +712,52 @@ function startChat(reportId) {
         snap.forEach(child => {
             const m = child.val();
             const isMe = m.sender === user.phone;
-            html += `
-                <div class="msg ${isMe ? 'me' : 'them'}" style="margin-bottom:10px;">
-                    <small style="display:block; font-size:10px; opacity:0.7;">${m.senderName || ''}</small>
-                    ${m.text}
-                </div>`;
+            html += `<div class="msg ${isMe ? 'me' : 'them'}">
+                        <small style="font-size:9px; display:block; opacity:0.6">${m.senderName}</small>
+                        ${m.text}
+                     </div>`;
         });
         const box = document.getElementById('chat-messages');
         box.innerHTML = html;
-        box.scrollTop = box.scrollHeight; // النزول لآخر رسالة تلقائياً
+        box.scrollTop = box.scrollHeight;
     });
 }
+
+// 3. دالة سحرية لصاحب البلاغ (توضع في صفحة البروفايل)
+// تقوم بمسح كافة المحادثات والعثور على الغرف التي يشارك فيها المستخدم
+function loadMyInbox() {
+    const user = JSON.parse(localStorage.getItem('sudan_user_data'));
+    const inboxRef = db.ref('chats');
+    
+    inboxRef.once('value', (snap) => {
+        let html = "<h3>محادثاتي</h3>";
+        let found = false;
+        
+        snap.forEach(room => {
+            const roomId = room.key;
+            // التحقق إذا كان رقم هاتف المستخدم جزءاً من اسم الغرفة
+            if (roomId.includes(user.phone)) {
+                found = true;
+                const lastMsg = Object.values(room.val()).pop(); // جلب آخر رسالة
+                html += `
+                <div class="report-card" onclick="openChatBox('${roomId}', 'محادثة سابقة')">
+                    <div style="flex:1">
+                        <h4 style="margin:0">${lastMsg.senderName}</h4>
+                        <p style="margin:5px 0; font-size:12px">${lastMsg.text}</p>
+                    </div>
+                    <i class="fas fa-comments" style="color:var(--accent)"></i>
+                </div>`;
+            }
+        });
+        
+        if (!found) html += "<p style='text-align:center'>لا توجد رسائل بعد</p>";
+        
+        // عرض النتائج (يمكنك وضعها في قسم جديد أو نافذة منبثقة)
+        document.getElementById('my-reports-list').innerHTML = html; 
+        navigate('pg-my-reports');
+    });
+}
+
 
 
         // --- إعدادات الحساب والإحصائيات ---
