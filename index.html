@@ -661,40 +661,53 @@ body {
 
 
         // --- الدردشة ---
-        function startChat(reportId) {
-            const item = allReports.find(r => r.id === reportId);
-            const user = JSON.parse(localStorage.getItem('sudan_user_data'));
-            if (user.phone === item.phone) return alert("هذا بلاغك الخاص!");
+        // دالة لبدء الدردشة أو الدخول إليها
+function startChat(reportId) {
+    const item = allReports.find(r => r.id === reportId);
+    const user = JSON.parse(localStorage.getItem('sudan_user_data'));
+    
+    // تحديد معرف الغرفة: يجب أن يكون ثابتاً بين هذين الشخصين لهذا البلاغ
+    // سنستخدم معرف البلاغ + رقم هاتف صاحب البلاغ + رقم هاتف المراسل
+    // لكن الأسهل حالياً: reportId + رقم هاتف الشخص الذي بدأ الدردشة
+    const roomId = `${reportId}_${item.phone}_${user.phone}`;
+    
+    document.getElementById('chat-with-name').innerText = "دردشة: " + item.title;
+    navigate('pg-chat-view');
 
-            const roomId = `${reportId}_${user.phone}`;
-            document.getElementById('chat-with-name').innerText = item.title;
-            navigate('pg-chat-view');
+    // إعداد زر الإرسال
+    document.getElementById('send-btn').onclick = () => {
+        const text = document.getElementById('chat-input').value.trim();
+        if (!text) return;
+        
+        db.ref('chats/' + roomId).push({
+            sender: user.phone,
+            senderName: user.name,
+            text: text,
+            timestamp: Date.now()
+        });
+        document.getElementById('chat-input').value = "";
+    };
 
-            document.getElementById('send-btn').onclick = () => {
-                const text = document.getElementById('chat-input').value;
-                if (!text) return;
-                db.ref('chats/' + roomId).push({
-                    sender: user.phone,
-                    text: text,
-                    timestamp: Date.now()
-                });
-                document.getElementById('chat-input').value = "";
-            };
+    // الاستماع للرسائل في الوقت الفعلي
+    if (currentChatRef) currentChatRef.off();
+    currentChatRef = db.ref('chats/' + roomId);
+    currentChatRef.on('value', (snap) => {
+        let html = "";
+        snap.forEach(child => {
+            const m = child.val();
+            const isMe = m.sender === user.phone;
+            html += `
+                <div class="msg ${isMe ? 'me' : 'them'}" style="margin-bottom:10px;">
+                    <small style="display:block; font-size:10px; opacity:0.7;">${m.senderName || ''}</small>
+                    ${m.text}
+                </div>`;
+        });
+        const box = document.getElementById('chat-messages');
+        box.innerHTML = html;
+        box.scrollTop = box.scrollHeight; // النزول لآخر رسالة تلقائياً
+    });
+}
 
-            if (currentChatRef) currentChatRef.off();
-            currentChatRef = db.ref('chats/' + roomId);
-            currentChatRef.on('value', (snap) => {
-                let html = "";
-                snap.forEach(child => {
-                    const m = child.val();
-                    const isMe = m.sender === user.phone;
-                    html += `<div class="msg ${isMe ? 'me' : 'them'}">${m.text}</div>`;
-                });
-                const box = document.getElementById('chat-messages');
-                box.innerHTML = html;
-                box.scrollTop = box.scrollHeight;
-            });
-        }
 
         // --- إعدادات الحساب والإحصائيات ---
         function updateStats() {
@@ -735,6 +748,12 @@ body {
                 document.getElementById('u-phone-display').innerText = user.phone;
             }
         }
+
+function showMyChats() {
+    const user = JSON.parse(localStorage.getItem('sudan_user_data'));
+    alert("سيتم إدراج قائمة المحادثات هنا قريباً. حالياً يمكنك الرد على من راسلك عبر الدخول لبلاغك.");
+    // تطوير مستقبلي: جلب كافة الغرف التي تحتوي على رقم هاتفه
+}
 
         function logout() { if(confirm("خروج؟")) { localStorage.clear(); location.reload(); } }
         function filterFeed(val) {
