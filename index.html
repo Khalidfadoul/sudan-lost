@@ -67,6 +67,17 @@
 
     <main id="main-app">
         <section id="pg-home" class="page active">
+        <div class="stats-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+    <div class="stat-card" style="background: var(--bg); padding: 15px; border-radius: 20px; text-align: center; box-shadow: var(--inner-shadow);">
+        <h2 id="count-lost" style="color: var(--danger); margin: 0;">0</h2>
+        <span style="font-size: 12px; color: var(--text-dim);">بلاغات مفقودة</span>
+    </div>
+    <div class="stat-card" style="background: var(--bg); padding: 15px; border-radius: 20px; text-align: center; box-shadow: var(--inner-shadow);">
+        <h2 id="count-found" style="color: var(--accent); margin: 0;">0</h2>
+        <span style="font-size: 12px; color: var(--text-dim);">بلاغات موجودة</span>
+    </div>
+</div>
+
             <div class="search-wrapper" style="background:var(--bg); padding:15px; border-radius:50px; box-shadow:var(--inner-shadow); display:flex; align-items:center; gap:10px; margin-bottom:20px;">
                 <i class="fas fa-search" style="color:var(--text-dim)"></i>
                 <input type="text" placeholder="بحث في السجلات الرسمية..." style="border:none; background:transparent; width:100%;" oninput="filterFeed(this.value)">
@@ -176,13 +187,29 @@
 
         // --- جلب البيانات ---
         function loadData() {
-            db.ref('reports').orderByChild('timestamp').on('value', (snap) => {
-                allReports = [];
-                snap.forEach(child => { allReports.push({ id: child.key, ...child.val() }); });
-                allReports.reverse();
-                renderFeed(allReports);
-            });
-        }
+    db.ref('reports').on('value', (snap) => {
+        allReports = [];
+        let lostCount = 0;
+        let foundCount = 0;
+        
+        snap.forEach(child => { 
+            const data = child.val();
+            allReports.push({ id: child.key, ...data });
+            
+            // عد الإحصائيات
+            if(data.type === 'lost') lostCount++;
+            else if(data.type === 'found') foundCount++;
+        });
+
+        // تحديث الأرقام في الواجهة
+        document.getElementById('count-lost').innerText = lostCount;
+        document.getElementById('count-found').innerText = foundCount;
+        
+        allReports.reverse();
+        renderFeed(allReports);
+    });
+}
+
 
         function renderFeed(data) {
             let html = "";
@@ -214,10 +241,20 @@
                     <h3 style="margin: 15px 0 10px;">${item.title}</h3>
                     <p style="user-select:text; font-size:14px; line-height:1.6;">${item.desc}</p>
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <button onclick="contactAction('tel', '${item.phone}')" class="btn-submit" style="background:var(--accent); color:white;"><i class="fas fa-phone"></i> اتصال</button>
-                    <button onclick="startChat('${id}')" class="btn-submit" style="background:var(--text); color:white;"><i class="fas fa-comments"></i> دردشة</button>
-                </div>
+               <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
+    <button onclick="contactAction('tel', '${item.phone}')" class="btn-submit" style="background:var(--accent); color:white; font-size:12px;">
+        <i class="fas fa-phone"></i> اتصال
+    </button>
+    
+    <button onclick="contactAction('wa', '${item.phone}')" class="btn-submit" style="background:#25D366; color:white; font-size:12px;">
+        <i class="fab fa-whatsapp"></i> واتساب
+    </button>
+    
+    <button onclick="startChat('${id}')" class="btn-submit" style="background:var(--text); color:white; font-size:12px;">
+        <i class="fas fa-comments"></i> دردشة
+    </button>
+</div>
+
                 <button onclick="deleteReport('${id}')" style="width:100%; border:none; background:none; color:var(--text-dim); margin-top:30px; font-size:12px;">حذف بلاغي (يتطلب PIN)</button>
             `;
             navigate('pg-details');
@@ -278,28 +315,39 @@
             document.getElementById('chat-input').value = "";
         }
 
-        function loadMyInbox() {
-            const user = JSON.parse(localStorage.getItem('sudan_user_data'));
-            db.ref('chats').once('value', (snap) => {
-                let html = "";
-                snap.forEach(room => {
-                    if (room.key.includes(user.phone)) {
-                        const messages = Object.values(room.val());
-                        const last = messages[messages.length - 1];
-                        html += `
-                        <div class="report-card" onclick="openChatBox('${room.key}', 'محادثة مستمرة')">
-                            <div style="flex:1">
-                                <h4 style="margin:0">${last.senderName}</h4>
-                                <p style="margin:5px 0; font-size:12px; color:var(--text-dim)">${last.text}</p>
-                            </div>
-                            <i class="fas fa-chevron-left" style="align-self:center"></i>
-                        </div>`;
-                    }
-                });
-                document.getElementById('my-list-container').innerHTML = html || "<p style='text-align:center'>لا توجد رسائل</p>";
-                navigate('pg-my-list');
-            });
-        }
+       function loadMyInbox(el) {
+    const user = JSON.parse(localStorage.getItem('sudan_user_data'));
+    if(!user) return alert("سجل دخولك أولاً");
+    
+    navigate('pg-my-list', el); // توجيه المستخدم لصفحة القائمة
+    
+    db.ref('chats').once('value', (snap) => {
+        let html = "";
+        let foundAny = false;
+        
+        snap.forEach(room => {
+            if (room.key.includes(user.phone)) {
+                foundAny = true;
+                const messages = Object.values(room.val());
+                const lastMsg = messages[messages.length - 1];
+                
+                html += `
+                <div class="report-card" onclick="openChatBox('${room.key}', 'محادثة مستمرة')" style="border-right: 5px solid var(--accent);">
+                    <div style="flex:1">
+                        <h4 style="margin:0">${lastMsg.senderName || 'مستخدم'}</h4>
+                        <p style="margin:5px 0; font-size:12px; color:var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            ${lastMsg.text}
+                        </p>
+                    </div>
+                    <i class="fas fa-chevron-left" style="align-self:center; color:var(--accent)"></i>
+                </div>`;
+            }
+        });
+        
+        document.getElementById('my-list-container').innerHTML = foundAny ? html : "<p style='text-align:center; padding:20px;'>لا توجد محادثات نشطة حالياً</p>";
+    });
+}
+
 
         // --- عمليات البلاغات ---
         function publishReport() {
@@ -388,7 +436,21 @@
 
         function openForm(type) { currentType = type; navigate('pg-form'); }
         function logout() { if(confirm("تسجيل خروج؟")) { localStorage.clear(); location.reload(); } }
-        function contactAction(type, phone) { window.location.href = type === 'tel' ? "tel:" + phone : "https://wa.me/249" + phone.replace(/^0/, ''); }
+        function contactAction(type, phone) {
+    // تنظيف رقم الهاتف من أي مسافات أو رموز
+    let cleanPhone = phone.replace(/\s/g, '');
+    
+    if (type === 'tel') {
+        window.location.href = "tel:" + cleanPhone;
+    } else if (type === 'wa') {
+        // تحويل الرقم لصيغة دولية سودانية إذا بدأ بـ 0
+        let waPhone = cleanPhone;
+        if (waPhone.startsWith('0')) {
+            waPhone = "249" + waPhone.substring(1);
+        }
+        window.location.href = "https://wa.me/" + waPhone;
+    }
+}
 
         window.onload = () => {
             loadData();
