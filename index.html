@@ -474,20 +474,33 @@
     const name = document.getElementById('user-name-init').value.trim();
     const phone = document.getElementById('user-phone-init').value.trim();
     
-    if(name.length < 10 || phone.length < 10) return alert("أدخل اسمك الرباعي ورقم هاتف صحيح");
+    if(name.length < 10 || phone.length < 10) {
+        return alert("يرجى إدخل الاسم الرباعي ورقم الهاتف بشكل صحيح");
+    }
 
-    // حفظ في قاعدة البيانات للرقابة
+    const userObj = { name, phone };
+
+    // الحفظ في قاعدة البيانات أولاً
     db.ref('users/' + phone).set({
         name: name,
         phone: phone,
         isBanned: false,
         joinDate: Date.now()
     }).then(() => {
-        localStorage.setItem('sudan_user_data', JSON.stringify({name, phone}));
+        // الحفظ محلياً بعد التأكد من نجاح حفظ السيرفر
+        localStorage.setItem('sudan_user_data', JSON.stringify(userObj));
+        
+        // تحديث الواجهة فوراً وإخفاء نافذة التسجيل
         document.getElementById('onboarding').style.display = 'none';
-        location.reload();
+        updateProfileUI();
+        
+        // تنبيه المستخدم بالنجاح
+        alert("تم التسجيل بنجاح في المنصة الأمنية");
+    }).catch((error) => {
+        alert("فشل الاتصال: " + error.message);
     });
 }
+
 
 
         function updateProfileUI() {
@@ -517,48 +530,89 @@
 
         function logout() { if(confirm("خروج؟")) { localStorage.clear(); location.reload(); } }
 
-        window.onload = () => {
-    // محاولة تحميل البيانات
-    try {
-        loadData();
-    } catch(e) {
-        console.error("Firebase connection failed");
-    }
-    
-    // إخفاء السبلاش مهما حدث بعد 3 ثوانٍ لضمان دخول المستخدم
-    setTimeout(() => { 
-        document.getElementById('splash').style.display = 'none'; 
-    }, 3000);
+        // --- الجزء الخاص ببداية التشغيل المصلح ---
+window.onload = () => {
+    const userData = localStorage.getItem('sudan_user_data');
 
-    if(!localStorage.getItem('sudan_user_data')) {
-        document.getElementById('onboarding').style.display = 'flex';
-    } else {
+    // 1. التحقق الفوري من حالة التسجيل المحلي
+    if (userData) {
+        document.getElementById('onboarding').style.display = 'none';
         updateProfileUI();
         watchNewMessages();
+    } else {
+        // إذا لم يوجد تسجيل، تظهر النافذة بعد انتهاء السبلاش
+        setTimeout(() => {
+            document.getElementById('onboarding').style.display = 'flex';
+        }, 3000);
     }
+
+    // 2. محاولة جلب البيانات من Firebase
+    try {
+        loadData();
+    } catch (e) {
+        console.error("Firebase Connection Error:", e);
+    }
+
+    // 3. إخفاء شاشة السبلاش (Splash Screen)
+    setTimeout(() => {
+        document.getElementById('splash').style.display = 'none';
+    }, 2500);
 };
 
-        
-        function checkUserStatus(action) {
-    const user = JSON.parse(localStorage.getItem('sudan_user_data'));
-    return db.ref('users/' + user.phone).once('value').then(snap => {
-        const userData = snap.val();
-        if (userData && userData.isBanned) {
-            alert("تم حظر حسابك نهائياً من قبل الإدارة لمخالفة القوانين.");
-            return false; // المستخدم محظور
-        }
-        return true; // المستخدم سليم
+// --- دالة حفظ بيانات المستخدم الجديدة (بدون إعادة تحميل الصفحة) ---
+function saveUserData() {
+    const name = document.getElementById('user-name-init').value.trim();
+    const phone = document.getElementById('user-phone-init').value.trim();
+    
+    if(name.length < 10 || phone.length < 10) {
+        return alert("يرجى إدخال الاسم الرباعي ورقم الهاتف بشكل صحيح");
+    }
+
+    const userObj = { name, phone };
+
+    // الحفظ في السيرفر أولاً للتوثيق
+    db.ref('users/' + phone).set({
+        name: name,
+        phone: phone,
+        isBanned: false,
+        joinDate: Date.now()
+    }).then(() => {
+        // الحفظ محلياً وإخفاء نافذة التسجيل
+        localStorage.setItem('sudan_user_data', JSON.stringify(userObj));
+        document.getElementById('onboarding').style.display = 'none';
+        updateProfileUI();
+        watchNewMessages();
+        alert("تم التسجيل بنجاح في المنصة الأمنية");
+    }).catch((error) => {
+        alert("فشل الاتصال بالسيرفر: " + error.message);
     });
 }
 
-// تعديل دالة إرسال الرسائل
+// --- دالة التحقق من حالة الحظر قبل أي إجراء حساس ---
+function checkUserStatus() {
+    const user = JSON.parse(localStorage.getItem('sudan_user_data'));
+    if (!user) return Promise.resolve(false);
+    
+    return db.ref('users/' + user.phone).once('value').then(snap => {
+        const userData = snap.val();
+        if (userData && userData.isBanned) {
+            alert("تم حظر حسابك نهائياً لمخالفة القوانين.");
+            logout(); // طرد المستخدم المحظور
+            return false;
+        }
+        return true;
+    });
+}
+
+// --- تعديل دالة إرسال الرسائل لتكون أكثر أماناً ---
 async function sendMessage() {
     const isAllowed = await checkUserStatus();
-    if(!isAllowed) return; // توقف إذا كان محظوراً
+    if(!isAllowed) return;
     
     const input = document.getElementById('chat-input');
     const text = input.value.trim();
     const user = JSON.parse(localStorage.getItem('sudan_user_data'));
+    
     if (!text || !currentRoomId) return;
     
     db.ref('chats/' + currentRoomId).push({ 
@@ -569,6 +623,7 @@ async function sendMessage() {
     });
     input.value = "";
 }
+
 
     </script>
 </body>
