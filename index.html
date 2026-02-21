@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>منصة مفقودات السودان 2026 - الموثقة</title>
+    <title>مفقودات السودان 2026 - الإصدار النهائي</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -15,155 +15,167 @@
             --shadow: 8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff;
             --inner-shadow: inset 6px 6px 12px #d1d9e6, inset -6px -6px 12px #ffffff;
         }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg); color: var(--text); margin: 0; direction: rtl; overflow-x: hidden; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: var(--bg); color: var(--text); margin: 0; padding: 0; direction: rtl; overflow-x: hidden; min-height: 100vh; }
         
-        #main-app { display: none; }
-        .page { display: none; padding: 20px 15px 120px; min-height: 100vh; animation: fadeIn 0.3s ease; }
+        /* شاشات البداية */
+        #splash { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.5s; }
+        #onboarding { position: fixed; inset: 0; background: var(--bg); z-index: 9000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        
+        /* الهيكل الرئيسي */
+        #main-app { display: none; opacity: 0; transition: 0.5s; }
+        .page { display: none; padding: 20px 15px 120px; min-height: 100vh; animation: fadeIn 0.4s ease; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* التنسيقات العامة */
-        .card { background: var(--bg); padding: 20px; border-radius: 25px; box-shadow: var(--shadow); margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.5); position: relative; }
+        /* البطاقات والعناصر */
+        .card { background: var(--bg); padding: 20px; border-radius: 25px; box-shadow: var(--shadow); margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.6); }
         .btn-submit { width: 100%; padding: 16px; border-radius: 18px; border: none; background: var(--bg); box-shadow: var(--shadow); color: var(--accent); font-weight: 800; cursor: pointer; margin-top: 12px; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .btn-submit:active { box-shadow: var(--inner-shadow); transform: scale(0.98); }
         
-        .report-card { background: var(--bg); padding: 12px; border-radius: 22px; box-shadow: var(--shadow); display: flex; gap: 15px; margin-bottom: 15px; cursor: pointer; align-items: center; }
-        .report-card img { width: 85px; height: 85px; border-radius: 18px; object-fit: cover; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); }
+        .report-card { background: var(--bg); padding: 12px; border-radius: 22px; box-shadow: var(--shadow); display: flex; gap: 15px; margin-bottom: 15px; cursor: pointer; align-items: center; transition: 0.2s; }
+        .report-card img { width: 80px; height: 80px; border-radius: 15px; object-fit: cover; }
         
         .badge { padding: 4px 12px; border-radius: 10px; font-size: 11px; font-weight: bold; }
         .badge-lost { background: #ffdada; color: #c0392b; }
         .badge-found { background: #d4f8e2; color: #27ae60; }
 
-        .notif-dot { position: absolute; top: 10px; right: 25%; width: 10px; height: 10px; background: var(--danger); border-radius: 50%; border: 2px solid var(--bg); display: none; }
-        
-        /* دليل الاستخدام وتنبيهات الأمان */
-        .security-banner { background: #fff1f1; border: 1px dashed var(--danger); padding: 10px; border-radius: 15px; font-size: 11px; color: var(--danger); margin-bottom: 15px; }
-        .guide-item { display: flex; gap: 10px; margin-bottom: 10px; font-size: 12px; align-items: flex-start; }
-        .guide-item i { color: var(--accent); margin-top: 3px; }
-
-        /* التنقل السفلي */
+        /* شريط التنقل */
         .bottom-nav { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 480px; height: 70px; background: rgba(242, 245, 248, 0.95); backdrop-filter: blur(15px); border-radius: 35px; display: flex; justify-content: space-around; align-items: center; box-shadow: var(--shadow); z-index: 1000; border: 1px solid #fff; }
         .nav-item { color: var(--text-dim); text-align: center; font-size: 10px; flex: 1; cursor: pointer; position: relative; }
         .nav-item.active { color: var(--accent); }
         .plus-center { width: 55px; height: 55px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white !important; margin-top: -40px; border: 4px solid var(--bg); font-size: 22px; box-shadow: 0 8px 15px rgba(39, 174, 96, 0.3); }
 
-        /* مدخلات النصوص */
+        /* تنبيهات الأمان والدردشة */
+        .security-alert { background: #fff1f1; border: 1px dashed var(--danger); padding: 12px; border-radius: 15px; font-size: 11px; color: var(--danger); margin-bottom: 15px; line-height: 1.5; }
+        .guide-box { font-size: 12px; line-height: 1.8; color: var(--text); }
+        .match-notif { background: #fff9e6; border: 2px solid var(--warning); padding: 10px; border-radius: 15px; margin-bottom: 15px; animation: pulse 2s infinite; cursor: pointer; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+
         input, textarea { width: 100%; padding: 15px; border-radius: 15px; border: none; box-shadow: var(--inner-shadow); background: var(--bg); margin-bottom: 15px; color: var(--text); outline: none; }
         
-        .contact-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .contact-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px; }
         .btn-wa { background: #25D366 !important; color: white !important; }
         .btn-call { background: #3498db !important; color: white !important; }
         .btn-chat { background: var(--text) !important; color: white !important; }
-
-        /* شاشات البداية */
-        #splash { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #onboarding { position: fixed; inset: 0; background: var(--bg); z-index: 9000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        
+        #chat-window { height: calc(100vh - 320px); overflow-y: auto; padding: 10px; background: white; border-radius: 20px; box-shadow: var(--inner-shadow); display: flex; flex-direction: column; gap: 10px; }
+        .msg-bubble { padding: 10px 15px; border-radius: 18px; max-width: 80%; font-size: 14px; }
+        .msg-me { align-self: flex-start; background: var(--accent); color: white; border-bottom-right-radius: 4px; }
+        .msg-them { align-self: flex-end; background: #eee; color: black; border-bottom-left-radius: 4px; }
     </style>
 </head>
 <body>
 
     <div id="splash">
         <i class="fas fa-shield-alt" style="font-size: 60px; color: var(--accent);"></i>
-        <h2 style="margin-top: 20px;">مفقودات السودان<br><small style="font-size: 12px; color: var(--text-dim);">أمانك مسؤوليتنا</small></h2>
+        <h2 style="margin-top: 20px;">مفقودات السودان 2026</h2>
+        <div style="width: 30px; height: 30px; border: 3px solid #ccc; border-top-color: var(--accent); border-radius: 50%; animation: spin 1s infinite linear;"></div>
     </div>
 
     <div id="onboarding">
-        <div class="card" style="max-width: 400px; width: 100%;">
-            <h3 style="text-align:center">توثيق الحساب</h3>
-            <p style="font-size: 11px; text-align: center; color: var(--danger);">* يجب استخدام بيانات رسمية، البلاغات الكاذبة تعرضك للمساءلة القانونية.</p>
+        <div class="card" style="width: 100%; max-width: 400px;">
+            <h3 style="text-align:center">تسجيل الدخول الآمن</h3>
+            <p style="font-size: 11px; text-align: center; color: var(--danger);">* المنصة تراقب البلاغات الكاذبة قانونياً.</p>
             <input type="text" id="reg-name" placeholder="الاسم الرباعي الرسمي">
             <input type="tel" id="reg-phone" placeholder="رقم الهاتف (0xxxxxxxxx)">
-            <button class="btn-submit" onclick="registerUser()">موافقة ودخول</button>
+            <button class="btn-submit" onclick="handleRegistration()">موافقة ودخول</button>
         </div>
     </div>
 
     <main id="main-app">
+        
         <section id="pg-home" class="page active">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                <div class="card" style="text-align: center; margin:0"><h2 id="count-lost" style="color:var(--danger); margin:0">0</h2><small>مفقود</small></div>
-                <div class="card" style="text-align: center; margin:0"><h2 id="count-found" style="color:var(--accent); margin:0">0</h2><small>موجود</small></div>
+                <div class="card" style="text-align: center; margin:0;"><h2 id="lost-count" style="color:var(--danger); margin:0">0</h2><small>مفقود</small></div>
+                <div class="card" style="text-align: center; margin:0;"><h2 id="found-count" style="color:var(--accent); margin:0">0</h2><small>موجود</small></div>
             </div>
-            <input type="text" placeholder="بحث سريع..." oninput="filterFeed(this.value)">
-            <div id="home-feed"></div>
+            <input type="text" placeholder="بحث عن (سيارة، موبايل، أوراق)..." oninput="searchData(this.value)">
+            <div id="feed-container"></div>
+        </section>
+
+        <section id="pg-my-reports" class="page">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px"><i class="fas fa-arrow-right" onclick="navigate('pg-profile')"></i> <h2>إدارة بلاغاتي</h2></div>
+            <div class="security-alert">يمكنك هنا تعديل حالة البلاغ أو حذفه باستخدام رمز الـ PIN.</div>
+            <div id="my-reports-container"></div>
         </section>
 
         <section id="pg-details" class="page">
-            <div id="details-view"></div>
+            <div id="item-details-content"></div>
         </section>
 
         <section id="pg-profile" class="page">
             <div class="card" style="text-align: center;">
-                <h3 id="u-name">..</h3>
-                <p id="u-phone" style="color:var(--text-dim); font-size:13px;"></p>
-                <button class="btn-submit" onclick="navigate('pg-my-reports')"><i class="fas fa-edit"></i> إدارة بلاغاتي (تعديل/حذف)</button>
+                <h3 id="display-name">..</h3>
+                <p id="display-phone" style="color:var(--text-dim); font-size:14px;"></p>
+                <button class="btn-submit" onclick="showMyReports()"><i class="fas fa-tasks"></i> إدارة بلاغاتي وتحكمها</button>
             </div>
 
             <div class="card">
-                <h4 style="margin:0 0 15px 0;"><i class="fas fa-book-open"></i> دليل الاستخدام الآمن</h4>
-                <div class="guide-item"><i class="fas fa-check-circle"></i><span>عند العثور على غرض، اطلب "وصفاً دقيقاً" لا يراه أحد في الصور.</span></div>
-                <div class="guide-item"><i class="fas fa-check-circle"></i><span>لا تسلم الغرض إلا في مكان عام أو نقطة شرطة.</span></div>
-                <div class="guide-item"><i class="fas fa-exclamation-triangle"></i><span>تجنب دفع أي مبالغ مالية مقابل "التوصيل" مسبقاً.</span></div>
+                <h4><i class="fas fa-info-circle"></i> دليل الاستخدام الصحيح</h4>
+                <div class="guide-box">
+                    1. <b>للباحثين:</b> لا تدفع مكافأة إلا بعد استلام الغرض يدوياً.<br>
+                    2. <b>للمكتشفين:</b> لا تعطي كل تفاصيل الغرض في الصور، احتفظ بـ "سر" لتتأكد من المالك.<br>
+                    3. <b>للجميع:</b> المقابلة في مكان عام نهاراً هي الخيار الأضمن.
+                </div>
             </div>
 
             <div class="card" style="border: 1px solid var(--danger);">
-                <h4 style="color:var(--danger); margin-top:0;"><i class="fas fa-gavel"></i> إخلاء المسؤولية القانونية</h4>
-                <p style="font-size: 11px; line-height: 1.6;">هذه المنصة وسيط تقني فقط. نحن لا نتحقق من صحة البلاغات ميدانياً. تقع المسؤولية الكاملة على عاتق المستخدم في التحقق من هوية الطرف الآخر. المنصة تخزن بياناتك للرجوع إليها في حال حدوث نزاع قانوني.</p>
+                <h4 style="color:var(--danger); margin-top:0"><i class="fas fa-balance-scale"></i> إخلاء مسؤولية المنصة</h4>
+                <p style="font-size: 11px; margin:0">نحن وسيط تقني فقط. لسنا مسؤولين عن أي عملية احتيال تتم خارج إطار التطبيق. رقم هاتفك هو هويتك، حافظ عليه.</p>
             </div>
             
-            <button class="btn-submit" style="color:var(--danger); margin-top:20px;" onclick="logout()">تسجيل الخروج</button>
+            <button class="btn-submit" onclick="userLogout()" style="color:var(--danger); box-shadow:none;">تسجيل الخروج</button>
         </section>
 
         <section id="pg-form" class="page">
-            <div class="security-banner"><i class="fas fa-info-circle"></i> تنبيه: سيتم تسجيل موقعك الجغرافي وتقييد البلاغ برقم هاتفك الموثق.</div>
-            <div class="card" style="height:180px; display:flex; align-items:center; justify-content:center; overflow:hidden;" onclick="document.getElementById('file-input').click()">
-                <img id="img-preview" style="width:100%; height:100%; object-fit:contain; display:none">
-                <div id="up-text"><i class="fas fa-camera" style="font-size:30px; color:var(--accent)"></i><br>أضف صورة واضحة</div>
-                <input type="file" id="file-input" hidden onchange="handleImage(event)">
+            <div class="security-alert">نظام الأمان يقوم بتشفير بياناتك. تأكد من إرفاق صورة حقيقية.</div>
+            <div class="card" style="height:180px; display:flex; align-items:center; justify-content:center; overflow:hidden;" onclick="document.getElementById('img-input').click()">
+                <img id="preview-img" style="width:100%; height:100%; object-fit:contain; display:none">
+                <div id="placeholder-text" style="text-align:center"><i class="fas fa-image" style="font-size:40px; color:var(--accent)"></i><br>ارفق صورة</div>
+                <input type="file" id="img-input" hidden accept="image/*" onchange="processImage(event)">
             </div>
             <div style="display:flex; gap:10px; margin-bottom:15px;">
-                <button id="btn-type-lost" onclick="setFormType('lost')" class="btn-submit" style="background:var(--danger); color:white;">مفقود</button>
-                <button id="btn-type-found" onclick="setFormType('found')" class="btn-submit">موجود</button>
+                <button id="type-l" onclick="changeType('lost')" class="btn-submit" style="background:var(--danger); color:white; margin:0">مفقود</button>
+                <button id="type-f" onclick="changeType('found')" class="btn-submit" style="margin:0">موجود</button>
             </div>
-            <input type="text" id="form-title" placeholder="اسم الغرض المفقود/الموجود">
-            <textarea id="form-desc" placeholder="التفاصيل: (اللون، الماركة، رقم الشاسي، مكان الفقد)"></textarea>
-            <input type="number" id="form-pin" placeholder="رمز PIN للحماية (4 أرقام)">
-            <p style="font-size:10px; color:var(--text-dim);">* الرمز PIN مطلوب عند الرغبة في حذف البلاغ لاحقاً.</p>
-            <button class="btn-submit" style="background:var(--accent); color:white;" onclick="submitReport()">نشر البلاغ الآن</button>
-        </section>
-
-        <section id="pg-my-reports" class="page">
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px"><i class="fas fa-arrow-right" onclick="navigate('pg-profile')"></i> <h2>بلاغاتي الخاصة</h2></div>
-            <div id="my-reports-list"></div>
+            <input type="text" id="post-title" placeholder="عنوان البلاغ (مثال: مفتاح سيارة تويوتا)">
+            <textarea id="post-desc" placeholder="وصف كامل: الزمان، المكان، وعلامات فارقة..."></textarea>
+            <input type="number" id="post-pin" placeholder="رمز PIN للحذف (4 أرقام)">
+            <button class="btn-submit" style="background:var(--accent); color:white;" onclick="handlePublish()">نشر البلاغ الآن</button>
         </section>
 
         <section id="pg-chat" class="page">
-            <div style="display:flex; align-items:center; gap:15px; margin-bottom:10px;">
+            <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
                 <i class="fas fa-arrow-right" onclick="navigate('pg-inbox')"></i>
-                <h4 id="chat-header">..</h4>
+                <h4 id="active-chat-title" style="margin:0">..</h4>
             </div>
-            <div class="security-banner" style="margin-bottom:10px; font-size:10px;">تحذير: لا تشارك بياناتك البنكية أو كلمات السر داخل الدردشة.</div>
-            <div id="chat-box" style="height: calc(100vh - 300px); overflow-y:auto; padding:10px; background:#fff; border-radius:15px; margin-bottom:10px;"></div>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="chat-input" placeholder="اكتب رسالة..." style="margin:0">
-                <button onclick="sendMsg()" style="width:60px; border-radius:15px; border:none; background:var(--accent); color:white;"><i class="fas fa-paper-plane"></i></button>
+            <div class="security-alert" style="font-size:10px; padding:8px">إخلاء مسؤولية: الدردشة مراقبة آلياً لمنع السلوكيات غير القانونية.</div>
+            <div id="chat-window"></div>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <input type="text" id="chat-msg-input" placeholder="اكتب رسالتك..." style="margin:0">
+                <button onclick="performSend()" style="width:55px; background:var(--accent); color:white; border:none; border-radius:15px;"><i class="fas fa-paper-plane"></i></button>
             </div>
         </section>
 
         <section id="pg-inbox" class="page">
-            <h2>صندوق الوارد</h2>
+            <h2>المحادثات الواردة</h2>
             <div id="inbox-list"></div>
         </section>
 
         <nav class="bottom-nav">
             <div class="nav-item active" onclick="navigate('pg-home', this)"><i class="fas fa-home"></i><br>الرئيسية</div>
-            <div class="nav-item" onclick="loadInbox(this)"><div id="chat-notif" class="notif-dot"></div><i class="fas fa-comments"></i><br>الرسائل</div>
+            <div class="nav-item" onclick="showInbox(this)"><div id="msg-dot" class="notif-dot"></div><i class="fas fa-comments"></i><br>الرسائل</div>
             <div class="nav-item plus-center" onclick="navigate('pg-form')"><i class="fas fa-plus"></i></div>
             <div class="nav-item" onclick="navigate('pg-profile', this)"><i class="fas fa-shield-alt"></i><br>الأمان</div>
         </nav>
+
     </main>
 
+    <style> @keyframes spin { to { transform: rotate(360deg); } } </style>
+
     <script>
+        // تكوين Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCybHxby_BWoisXHKg5PYEzNgRosBvH66Y",
             authDomain: "mafgoodsudan-b76ab.firebaseapp.com",
@@ -174,185 +186,233 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let allData = [];
-        let baseImg = "";
-        let fType = 'lost';
-        let activeRoom = null;
+        let masterData = [];
+        let currentPostType = 'lost';
+        let encodedImg = "";
+        let currentRoom = null;
 
-        // --- إدارة المستخدم ---
-        function registerUser() {
-            const name = document.getElementById('reg-name').value.trim();
-            const phone = document.getElementById('reg-phone').value.trim();
-            if(name.length < 10 || phone.length < 10) return alert("أدخل اسمك الرباعي ورقم هاتفك");
-            const u = { name, phone };
-            localStorage.setItem('sudan_user', JSON.stringify(u));
-            db.ref('users/' + phone).set(u).then(() => location.reload());
-        }
-
-        function initApp() {
-            const user = localStorage.getItem('sudan_user');
-            if(!user) {
+        // --- نظام بدء التشغيل ---
+        function bootApp() {
+            const userData = localStorage.getItem('sudan_user_v2');
+            if(!userData) {
                 document.getElementById('onboarding').style.display = 'flex';
+                document.getElementById('splash').style.display = 'none';
             } else {
+                const u = JSON.parse(userData);
+                document.getElementById('display-name').innerText = u.name;
+                document.getElementById('display-phone').innerText = u.phone;
+                syncData();
                 document.getElementById('main-app').style.display = 'block';
-                const u = JSON.parse(user);
-                document.getElementById('u-name').innerText = u.name;
-                document.getElementById('u-phone').innerText = u.phone;
-                loadGlobalData();
+                setTimeout(() => {
+                    document.getElementById('main-app').style.opacity = '1';
+                    document.getElementById('splash').style.display = 'none';
+                }, 1000);
             }
-            setTimeout(() => document.getElementById('splash').style.display = 'none', 1500);
         }
 
-        // --- البيانات العامة ---
-        function loadGlobalData() {
+        // --- المزامنة والبيانات ---
+        function syncData() {
             db.ref('reports').on('value', snap => {
-                allData = []; let l = 0, f = 0;
+                masterData = [];
+                let l = 0, f = 0;
                 snap.forEach(c => {
-                    const item = {id: c.key, ...c.val()};
-                    allData.push(item);
-                    item.type === 'lost' ? l++ : f++;
+                    const r = { id: c.key, ...c.val() };
+                    masterData.push(r);
+                    r.type === 'lost' ? l++ : f++;
                 });
-                document.getElementById('count-lost').innerText = l;
-                document.getElementById('count-found').innerText = f;
-                renderHome(allData.slice().reverse());
+                document.getElementById('lost-count').innerText = l;
+                document.getElementById('found-count').innerText = f;
+                renderFeed(masterData.slice().reverse());
             });
         }
 
-        function renderHome(data) {
+        function renderFeed(data) {
             let html = "";
             data.forEach(i => {
-                html += `<div class="report-card" onclick="viewItem('${i.id}')">
+                html += `
+                <div class="report-card" onclick="openDetails('${i.id}')">
                     <img src="${i.img}">
-                    <div style="flex:1"><h4>${i.title}</h4><span class="badge ${i.type==='lost'?'badge-lost':'badge-found'}">${i.type==='lost'?'مفقود':'موجود'}</span></div>
+                    <div style="flex:1">
+                        <h4 style="margin:0 0 5px 0">${i.title}</h4>
+                        <span class="badge ${i.type==='lost'?'badge-lost':'badge-found'}">${i.type==='lost'?'مفقود':'موجود'}</span>
+                    </div>
                 </div>`;
             });
-            document.getElementById('home-feed').innerHTML = html || "<p style='text-align:center'>لا توجد بلاغات</p>";
+            document.getElementById('feed-container').innerHTML = html || "<p style='text-align:center; padding:20px'>لا توجد بيانات حالياً</p>";
         }
 
-        function viewItem(id) {
-            const i = allData.find(x => x.id === id);
-            const user = JSON.parse(localStorage.getItem('sudan_user'));
-            // خوارزمية التطابق
-            const matches = allData.filter(m => m.type !== i.type && (m.title.includes(i.title) || i.title.includes(m.title)));
-            let mHtml = matches.length > 0 ? `<div class="card" style="background:#fff9e6; border:1px solid var(--warning);" onclick="viewItem('${matches[0].id}')">⚠️ احتمال تطابق: وجدنا بلاغاً مشابهاً (اضغط هنا)</div>` : "";
+        // --- التفاصيل والمطابقة ---
+        function openDetails(id) {
+            const i = masterData.find(x => x.id === id);
+            
+            // خوارزمية التطابق الذكي
+            const matching = masterData.find(m => m.type !== i.type && (m.title.toLowerCase().includes(i.title.toLowerCase()) || i.title.toLowerCase().includes(m.title.toLowerCase())));
+            let matchUI = matching ? `<div class="match-notif" onclick="openDetails('${matching.id}')">⚠️ قد يكون هذا هو غرضك! وجدنا بلاغاً مشابهاً: "${matching.title}"</div>` : "";
 
-            document.getElementById('details-view').innerHTML = `
+            document.getElementById('item-details-content').innerHTML = `
                 <i class="fas fa-arrow-right" onclick="navigate('pg-home')"></i>
                 <div class="card" style="padding:0; overflow:hidden; margin-top:15px"><img src="${i.img}" style="width:100%"></div>
-                ${mHtml}
+                ${matchUI}
                 <div class="card">
                     <h3>${i.title}</h3>
                     <p>${i.desc}</p>
-                    <small>الناشر: ${i.uName}</small>
+                    <small style="color:var(--text-dim)">بواسطة: ${i.uName}</small>
                 </div>
-                <div class="contact-grid">
+                <div class="contact-bar">
                     <button class="btn-submit btn-call" onclick="window.location.href='tel:${i.phone}'"><i class="fas fa-phone"></i></button>
                     <button class="btn-submit btn-wa" onclick="window.location.href='https://wa.me/249${i.phone.substring(1)}'"><i class="fab fa-whatsapp"></i></button>
-                    <button class="btn-submit btn-chat" onclick="startChat('${i.id}')"><i class="fas fa-comments"></i></button>
+                    <button class="btn-submit btn-chat" onclick="initiateChat('${i.id}')"><i class="fas fa-comments"></i></button>
                 </div>
             `;
             navigate('pg-details');
         }
 
-        // --- إدارة بلاغاتي (التعديل والحذف) ---
+        // --- إدارة بلاغاتي (تعديل وحذف) ---
         function showMyReports() {
-            const user = JSON.parse(localStorage.getItem('sudan_user'));
-            const mine = allData.filter(x => x.phone === user.phone);
+            const u = JSON.parse(localStorage.getItem('sudan_user_v2'));
+            const mine = masterData.filter(x => x.phone === u.phone);
             let html = "";
             mine.forEach(i => {
-                html += `<div class="report-card">
+                html += `
+                <div class="report-card">
                     <img src="${i.img}">
-                    <div style="flex:1"><h4>${i.title}</h4><button onclick="deleteReport('${i.id}', '${i.pin}')" style="color:var(--danger); border:none; background:none; font-size:12px;">حذف البلاغ</button></div>
+                    <div style="flex:1">
+                        <h4>${i.title}</h4>
+                        <button onclick="requestDelete('${i.id}', '${i.pin}')" style="color:var(--danger); border:none; background:none; font-size:12px; cursor:pointer;">حذف البلاغ</button>
+                    </div>
                 </div>`;
             });
-            document.getElementById('my-reports-list').innerHTML = html || "لم تنشر أي بلاغات بعد.";
+            document.getElementById('my-reports-container').innerHTML = html || "لا توجد بلاغات باسمك.";
             navigate('pg-my-reports');
         }
 
-        function deleteReport(id, correctPin) {
-            const pin = prompt("أدخل رمز PIN الخاص بالبلاغ للحذف:");
+        function requestDelete(id, correctPin) {
+            const pin = prompt("أدخل رمز الـ PIN المكون من 4 أرقام لحذف هذا البلاغ:");
             if(pin === correctPin) {
-                if(confirm("هل أنت متأكد؟")) db.ref('reports/' + id).remove().then(() => alert("تم الحذف"));
-            } else alert("رمز PIN خاطئ");
+                if(confirm("هل أنت متأكد من حذف البلاغ نهائياً؟")) {
+                    db.ref('reports/' + id).remove().then(() => alert("تم الحذف بنجاح"));
+                }
+            } else {
+                alert("رمز PIN غير صحيح!");
+            }
         }
 
-        // --- الدردشة ---
-        function startChat(id) {
-            const i = allData.find(x => x.id === id);
-            const user = JSON.parse(localStorage.getItem('sudan_user'));
-            if(user.phone === i.phone) return alert("هذا بلاغك");
-            activeRoom = "room_" + [user.phone, i.phone].sort().join("_");
-            document.getElementById('chat-header').innerText = i.title;
+        // --- نظام الدردشة المحكم ---
+        function initiateChat(id) {
+            const item = masterData.find(x => x.id === id);
+            const user = JSON.parse(localStorage.getItem('sudan_user_v2'));
+            if(user.phone === item.phone) return alert("هذا بلاغك الخاص!");
+            
+            currentRoom = "room_" + [user.phone, item.phone].sort().join("_");
+            document.getElementById('active-chat-title').innerText = item.title;
             navigate('pg-chat');
-            db.ref('chats/' + activeRoom).on('value', snap => {
+            
+            db.ref('chats/' + currentRoom).on('value', snap => {
                 let h = "";
                 snap.forEach(m => {
                     const d = m.val();
-                    h += `<div style="text-align:${d.s===user.phone?'left':'right'}; margin:5px;"><span style="background:${d.s===user.phone?var(--accent):'#eee'}; color:${d.s===user.phone?'white':'black'}; padding:8px 12px; border-radius:15px; display:inline-block; font-size:13px;">${d.t}</span></div>`;
+                    h += `<div class="msg-bubble ${d.s === user.phone ? 'msg-me' : 'msg-them'}">${d.t}</div>`;
                 });
-                const b = document.getElementById('chat-box'); b.innerHTML = h; b.scrollTop = b.scrollHeight;
+                const win = document.getElementById('chat-window');
+                win.innerHTML = h;
+                win.scrollTop = win.scrollHeight;
             });
         }
 
-        function sendMsg() {
-            const t = document.getElementById('chat-input').value;
-            const user = JSON.parse(localStorage.getItem('sudan_user'));
-            if(!t || !activeRoom) return;
-            db.ref('chats/' + activeRoom).push({ s: user.phone, t: t, time: Date.now() });
-            document.getElementById('chat-input').value = "";
+        function performSend() {
+            const t = document.getElementById('chat-msg-input').value.trim();
+            const u = JSON.parse(localStorage.getItem('sudan_user_v2'));
+            if(!t || !currentRoom) return;
+            db.ref('chats/' + currentRoom).push({ s: u.phone, t: t, time: Date.now() });
+            document.getElementById('chat-msg-input').value = "";
         }
 
-        function loadInbox(el) {
-            const user = JSON.parse(localStorage.getItem('sudan_user'));
+        function showInbox(el) {
+            const u = JSON.parse(localStorage.getItem('sudan_user_v2'));
             navigate('pg-inbox', el);
             db.ref('chats').on('value', snap => {
                 let h = "";
-                snap.forEach(r => {
-                    if(r.key.includes(user.phone)) {
-                        h += `<div class="card" onclick="openRoom('${r.key}')" style="padding:15px; margin-bottom:10px;">محادثة نشطة</div>`;
+                snap.forEach(room => {
+                    if(room.key.includes(u.phone)) {
+                        h += `<div class="card" onclick="openRoom('${room.key}')">محادثة حول غرض</div>`;
                     }
                 });
                 document.getElementById('inbox-list').innerHTML = h || "لا توجد رسائل";
             });
         }
 
-        // --- وظائف النشر ---
-        function handleImage(e) {
+        // --- وظائف النشر والصور ---
+        function processImage(e) {
             const r = new FileReader();
-            r.onload = ev => { baseImg = ev.target.result; document.getElementById('img-preview').src = baseImg; document.getElementById('img-preview').style.display='block'; document.getElementById('up-text').style.display='none'; };
+            r.onload = ev => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = 600; canvas.height = (600/img.width)*img.height;
+                    ctx.drawImage(img, 0, 0, 600, canvas.height);
+                    encodedImg = canvas.toDataURL('image/jpeg', 0.7);
+                    document.getElementById('preview-img').src = encodedImg;
+                    document.getElementById('preview-img').style.display = 'block';
+                    document.getElementById('placeholder-text').style.display = 'none';
+                };
+                img.src = ev.target.result;
+            };
             r.readAsDataURL(e.target.files[0]);
         }
 
-        function setFormType(t) {
-            fType = t;
-            document.getElementById('btn-type-lost').style.background = t==='lost'? 'var(--danger)':'var(--bg)';
-            document.getElementById('btn-type-found').style.background = t==='found'? 'var(--accent)':'var(--bg)';
+        function handlePublish() {
+            const u = JSON.parse(localStorage.getItem('sudan_user_v2'));
+            const title = document.getElementById('post-title').value;
+            const desc = document.getElementById('post-desc').value;
+            const pin = document.getElementById('post-pin').value;
+            if(!title || !encodedImg || pin.length < 4) return alert("أكمل العنوان والصورة ورمز PIN");
+            
+            db.ref('reports').push({
+                title, desc, pin, img: encodedImg, type: currentPostType,
+                phone: u.phone, uName: u.name, time: Date.now()
+            }).then(() => {
+                alert("تم النشر بنجاح");
+                location.reload();
+            });
         }
 
-        function submitReport() {
-            const user = JSON.parse(localStorage.getItem('sudan_user'));
-            const title = document.getElementById('form-title').value;
-            const desc = document.getElementById('form-desc').value;
-            const pin = document.getElementById('form-pin').value;
-            if(!title || !baseImg || pin.length < 4) return alert("أكمل البيانات و PIN");
-            db.ref('reports').push({ title, desc, pin, img: baseImg, type: fType, phone: user.phone, uName: user.name, time: Date.now() })
-            .then(() => { alert("تم النشر"); location.reload(); });
+        // --- مساعدات النظام ---
+        function handleRegistration() {
+            const name = document.getElementById('reg-name').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            if(name.length < 10 || phone.length < 10) return alert("أدخل بياناتك الرباعية ورقم الهاتف الصحيح");
+            localStorage.setItem('sudan_user_v2', JSON.stringify({name, phone}));
+            bootApp();
         }
 
-        function navigate(id, el) {
+        function changeType(t) {
+            currentPostType = t;
+            document.getElementById('type-l').style.background = t === 'lost' ? 'var(--danger)' : 'var(--bg)';
+            document.getElementById('type-l').style.color = t === 'lost' ? 'white' : 'var(--danger)';
+            document.getElementById('type-f').style.background = t === 'found' ? 'var(--accent)' : 'var(--bg)';
+            document.getElementById('type-f').style.color = t === 'found' ? 'white' : 'var(--accent)';
+        }
+
+        function navigate(page, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            if(el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
+            document.getElementById(page).classList.add('active');
+            if(el) {
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                el.classList.add('active');
+            }
+            window.scrollTo(0,0);
         }
 
-        function filterFeed(v) {
+        function searchData(v) {
             const t = v.toLowerCase();
-            renderHome(allData.filter(i => i.title.toLowerCase().includes(t) || i.desc.toLowerCase().includes(t)));
+            renderFeed(masterData.filter(i => i.title.toLowerCase().includes(t) || i.desc.toLowerCase().includes(t)));
         }
 
-        function logout() { localStorage.clear(); location.reload(); }
+        function userLogout() { if(confirm("خروج؟")) { localStorage.clear(); location.reload(); } }
 
-        window.onload = initApp;
+        // الإقلاع
+        window.onload = bootApp;
     </script>
 </body>
 </html>
