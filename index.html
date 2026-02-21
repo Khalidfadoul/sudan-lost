@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>مفقودات السودان - النسخة الشاملة 2026</title>
+    <title>مفقودات السودان 2026 - النسخة المستقرة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -16,14 +16,17 @@
             --inner-shadow: inset 6px 6px 12px #d1d9e6, inset -6px -6px 12px #ffffff;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg); color: var(--text); margin: 0; direction: rtl; overflow-x: hidden; }
+        body { background: var(--bg); color: var(--text); margin: 0; direction: rtl; overflow-x: hidden; min-height: 100vh; }
         
+        /* الهيكلية الأساسية */
+        #main-app { display: none; } /* يظهر فقط بعد التسجيل */
         .page { display: none; padding: 20px 15px 120px; min-height: 100vh; animation: fadeIn 0.3s ease; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+        /* العناصر الجمالية */
         .card { background: var(--bg); padding: 20px; border-radius: 25px; box-shadow: var(--shadow); margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.5); }
-        .btn-submit { width: 100%; padding: 16px; border-radius: 18px; border: none; background: var(--bg); box-shadow: var(--shadow); color: var(--accent); font-weight: 800; cursor: pointer; margin-top: 12px; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-submit { width: 100%; padding: 16px; border-radius: 18px; border: none; background: var(--bg); box-shadow: var(--shadow); color: var(--accent); font-weight: 800; cursor: pointer; margin-top: 12px; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
         .btn-submit:active { box-shadow: var(--inner-shadow); transform: scale(0.98); }
         
         .report-card { background: var(--bg); padding: 12px; border-radius: 22px; box-shadow: var(--shadow); display: flex; gap: 15px; margin-bottom: 15px; cursor: pointer; align-items: center; }
@@ -33,28 +36,28 @@
         .badge-lost { background: #ffdada; color: #c0392b; }
         .badge-found { background: #d4f8e2; color: #27ae60; }
 
-        /* إضافة نمط التنبيه والاشعارات */
         .notif-dot { position: absolute; top: 10px; right: 25%; width: 10px; height: 10px; background: var(--danger); border-radius: 50%; border: 2px solid var(--bg); display: none; }
         .match-card { background: #fff9e6; border: 2px dashed var(--warning); border-radius: 20px; padding: 15px; margin: 15px 0; cursor: pointer; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
+        /* التنقل */
         .bottom-nav { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 480px; height: 70px; background: rgba(242, 245, 248, 0.95); backdrop-filter: blur(15px); border-radius: 35px; display: flex; justify-content: space-around; align-items: center; box-shadow: var(--shadow); z-index: 1000; border: 1px solid #fff; }
         .nav-item { color: var(--text-dim); text-align: center; font-size: 10px; flex: 1; cursor: pointer; transition: 0.3s; position: relative; }
         .nav-item.active { color: var(--accent); }
         .plus-center { width: 55px; height: 55px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white !important; margin-top: -40px; border: 4px solid var(--bg); font-size: 22px; box-shadow: 0 8px 15px rgba(39, 174, 96, 0.3); }
 
-        #chat-messages { height: calc(100vh - 250px); overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        /* الدردشة */
+        #chat-messages { height: calc(100vh - 280px); overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
         .msg { padding: 12px 16px; border-radius: 18px; max-width: 85%; font-size: 14px; box-shadow: var(--shadow); line-height: 1.5; }
         .msg.me { align-self: flex-start; background: var(--accent); color: white; border-bottom-right-radius: 4px; }
         .msg.them { align-self: flex-end; background: white; color: var(--text); border-bottom-left-radius: 4px; }
 
+        /* شاشة التحميل والتسجيل */
         #splash { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .legal-notice { font-size: 11px; color: var(--danger); font-weight: bold; background: #fff1f1; padding: 10px; border-radius: 12px; margin-top: 10px; border: 1px dashed var(--danger); }
+        #onboarding { position: fixed; inset: 0; background: var(--bg); z-index: 9000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         
-        input, textarea { width: 100%; padding: 15px; border-radius: 15px; border: none; box-shadow: var(--inner-shadow); background: var(--bg); margin-bottom: 15px; color: var(--text); }
-        input:focus, textarea:focus { outline: 2px solid var(--accent); }
-
-        /* أزرار التواصل المتعددة */
+        input, textarea { width: 100%; padding: 15px; border-radius: 15px; border: none; box-shadow: var(--inner-shadow); background: var(--bg); margin-bottom: 15px; color: var(--text); outline: none; }
+        
         .contact-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px; }
         .btn-wa { background: #25D366 !important; color: white !important; }
         .btn-call { background: #3498db !important; color: white !important; }
@@ -65,36 +68,27 @@
 
     <div id="splash">
         <i class="fas fa-shield-alt" style="font-size: 60px; color: var(--accent);"></i>
-        <h2 style="margin-top: 20px;">مفقودات السودان 2026<br><span style="font-size: 14px; color: var(--text-dim);">المنصة الأمنية الموحدة</span></h2>
-        <p style="font-size: 10px; position: absolute; bottom: 30px;">تحت إشراف السلطات المختصة</p>
+        <h2 style="margin-top: 20px;">مفقودات السودان 2026</h2>
+        <div class="loader" style="width: 40px; height: 40px; border: 4px solid #ddd; border-top-color: var(--accent); border-radius: 50%; animation: spin 1s infinite linear;"></div>
     </div>
 
-    <div id="onboarding" class="modal-overlay" style="display:none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9000; display: flex; align-items: center; justify-content: center; padding: 20px;">
+    <div id="onboarding">
         <div class="card" style="max-width: 400px; width: 100%;">
-            <h3 style="text-align:center">التسجيل القانوني</h3>
-            <p style="font-size: 12px; text-align: center; color: var(--text-dim);">يجب إدخال بيانات حقيقية لتجنب الحظر القانوني</p>
+            <h3 style="text-align:center">التسجيل الرسمي</h3>
+            <p style="font-size: 12px; text-align: center; color: var(--text-dim); margin-bottom: 20px;">الرجاء استخدام اسمك الحقيقي ورقم هاتفك لضمان استرداد مفقوداتك.</p>
             <input type="text" id="user-name-init" placeholder="الاسم الرباعي الرسمي">
-            <input type="tel" id="user-phone-init" placeholder="رقم الهاتف (0xxxxxxxxx)">
-            <button class="btn-submit" onclick="saveUserData()">موافقة وتسجيل</button>
+            <input type="tel" id="user-phone-init" placeholder="رقم الهاتف (مثال: 0912345678)">
+            <button class="btn-submit" onclick="saveUserData()">دخول المنصة</button>
         </div>
     </div>
 
     <main id="main-app">
         <section id="pg-home" class="page active">
-            <div class="stats-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                <div class="stat-card" style="background: var(--bg); padding: 15px; border-radius: 20px; text-align: center; box-shadow: var(--inner-shadow);">
-                    <h2 id="count-lost" style="color: var(--danger); margin: 0;">0</h2>
-                    <span style="font-size: 12px; color: var(--text-dim);">مفقود</span>
-                </div>
-                <div class="stat-card" style="background: var(--bg); padding: 15px; border-radius: 20px; text-align: center; box-shadow: var(--inner-shadow);">
-                    <h2 id="count-found" style="color: var(--accent); margin: 0;">0</h2>
-                    <span style="font-size: 12px; color: var(--text-dim);">موجود</span>
-                </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                <div class="card" style="text-align: center; margin-bottom:0"><h2 id="count-lost" style="color:var(--danger); margin:0">0</h2><small>مفقود</small></div>
+                <div class="card" style="text-align: center; margin-bottom:0"><h2 id="count-found" style="color:var(--accent); margin:0">0</h2><small>موجود</small></div>
             </div>
-            <div class="search-wrapper" style="background:var(--bg); padding:15px; border-radius:50px; box-shadow:var(--inner-shadow); display:flex; align-items:center; gap:10px; margin-bottom:20px;">
-                <i class="fas fa-search" style="color:var(--text-dim)"></i>
-                <input type="text" placeholder="بحث بالاسم أو النوع..." style="margin-bottom:0; box-shadow:none;" oninput="filterFeed(this.value)">
-            </div>
+            <input type="text" placeholder="بحث باسم الغرض أو المكان..." oninput="filterFeed(this.value)">
             <div id="home-feed"></div>
         </section>
 
@@ -104,35 +98,37 @@
 
         <section id="pg-profile" class="page">
             <div class="card" style="text-align: center;">
-                <h3 class="u-name" id="profile-name-display">جاري التحميل...</h3>
-                <p id="u-phone-display" style="color:var(--text-dim);"></p>
-                <div style="font-size: 10px; color: var(--accent); border: 1px solid var(--accent); padding: 5px; border-radius: 10px; display:inline-block;">هوية موثقة رقمياً</div>
+                <h3 id="profile-name-display">..</h3>
+                <p id="profile-phone-display" style="color:var(--text-dim);"></p>
+                <div style="font-size: 10px; color: var(--accent); border: 1px solid var(--accent); padding: 5px; border-radius: 10px; display:inline-block;">موثق بالهوية</div>
             </div>
-            <button class="btn-submit" onclick="showMyReports()"><i class="fas fa-folder-open"></i> إدارة بلاغاتي</button>
-            <div class="card" style="margin-top: 25px; background: #fff;">
-                <h4 style="margin: 0 0 10px 0; color: var(--danger);"><i class="fas fa-balance-scale"></i> تنبيه المسؤولية القانونية</h4>
-                <p style="font-size: 12px; line-height: 1.6; margin: 0;">1. المنصة مربوطة بقاعدة بيانات المباحث. أي استخدام خاطئ يعرض صاحب الرقم للملاحقة.</p>
-                <p style="font-size: 12px; line-height: 1.6; margin: 5px 0;">2. <b>تحذير هام:</b> لا تقم بتحويل أي مبالغ مالية (رسوم توصيل أو مكافأة) عبر "بنكك" أو "فوري" قبل معاينة الغرض يدوياً.</p>
+            <button class="btn-submit" onclick="showMyReports()"><i class="fas fa-list"></i> إدارة بلاغاتي</button>
+            <div class="card" style="margin-top:20px; border-right: 5px solid var(--danger);">
+                <h4 style="color:var(--danger); margin:0">تنبيهات أمنية:</h4>
+                <ul style="font-size: 12px; padding-right: 20px; line-height: 1.8;">
+                    <li>لا تقم بتحويل أموال تحت مسمى "عربون" أو "شحن".</li>
+                    <li>المقابلة يجب أن تكون في مكان عام أو قسم شرطة.</li>
+                    <li>يتم رصد الـ IP الخاص بك لحماية المجتمع.</li>
+                </ul>
             </div>
-            <button class="btn-submit" style="color:var(--danger); box-shadow:none;" onclick="logout()">تسجيل الخروج</button>
+            <button class="btn-submit" style="color:var(--danger); margin-top:20px;" onclick="logout()">خروج</button>
         </section>
 
         <section id="pg-form" class="page">
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px"><i class="fas fa-arrow-right" onclick="navigate('pg-home')"></i> <h2>بلاغ جديد</h2></div>
             <div class="card" style="height:200px; display:flex; align-items:center; justify-content:center; overflow:hidden;" onclick="document.getElementById('file-input').click()">
                 <img id="img-preview" style="width:100%; height:100%; object-fit:contain; display:none">
-                <div id="upload-placeholder" style="text-align:center;"><i class="fas fa-camera" style="font-size:40px; color: var(--accent)"></i><br>ارفق صورة واضحة</div>
-                <input type="file" id="file-input" hidden onchange="handleImageSelection(event)">
+                <div id="upload-placeholder" style="text-align:center;"><i class="fas fa-camera" style="font-size:40px; color: var(--accent)"></i><br>صورة الغرض</div>
+                <input type="file" id="file-input" hidden accept="image/*" onchange="handleImageSelection(event)">
             </div>
             <div style="display:flex; gap:10px; margin-bottom:15px;">
                 <button id="type-lost" onclick="setFormType('lost')" class="btn-submit" style="margin:0; background:var(--danger); color:white;">مفقود</button>
-                <button id="type-found" onclick="setFormType('found')" class="btn-submit" style="margin:0; background:var(--bg); color:var(--accent);">موجود</button>
+                <button id="type-found" onclick="setFormType('found')" class="btn-submit" style="margin:0;">موجود</button>
             </div>
-            <input type="text" id="inp-title" placeholder="عنوان البلاغ (مثال: مفاتيح سيارة)">
-            <textarea id="inp-desc" placeholder="وصف دقيق للمكان والزمان والعلامات المميزة..."></textarea>
-            <input type="number" id="inp-pin" placeholder="رمز PIN للحذف (4 أرقام)">
-            <div class="legal-notice">إقرار: أنا مسؤول مسؤولية كاملة عن صحة هذا البلاغ أمام القانون.</div>
-            <button class="btn-submit" style="background:var(--accent); color:white;" onclick="publishReport()">نشر البلاغ الآن</button>
+            <input type="text" id="inp-title" placeholder="ماذا فقدت؟ (مثال: تويوتا كورولا)">
+            <textarea id="inp-desc" placeholder="وصف مفصل، مكان الفقد، رقم الشاسي إن وجد..."></textarea>
+            <input type="number" id="inp-pin" placeholder="PIN للحذف (4 أرقام)">
+            <button class="btn-submit" style="background:var(--accent); color:white;" onclick="publishReport()">نشر البلاغ</button>
         </section>
 
         <section id="pg-chat" class="page">
@@ -140,33 +136,32 @@
                 <i class="fas fa-arrow-right" onclick="navigate('pg-inbox')"></i>
                 <h4 id="chat-title" style="margin:0">دردشة</h4>
             </div>
-            <div id="chat-messages"></div>
-            <div style="display:flex; gap:10px; margin-top:10px;">
-                <input type="text" id="chat-input" placeholder="اكتب رسالتك..." style="margin-bottom:0;">
+            <div id="chat-messages" class="card" style="padding:10px; overflow-y:auto;"></div>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="chat-input" placeholder="اكتب هنا..." style="margin:0">
                 <button onclick="sendMessage()" style="width:60px; border-radius:15px; border:none; background:var(--accent); color:white;"><i class="fas fa-paper-plane"></i></button>
             </div>
         </section>
 
         <section id="pg-inbox" class="page">
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px"><i class="fas fa-arrow-right" onclick="navigate('pg-profile')"></i> <h2>المحادثات</h2></div>
+            <h2>المحادثات</h2>
             <div id="inbox-list-container"></div>
         </section>
 
         <section id="pg-my-list" class="page">
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px"><i class="fas fa-arrow-right" onclick="navigate('pg-profile')"></i> <h2>إدارة سجلاتي</h2></div>
+            <h2>بلاغاتي المنشورة</h2>
             <div id="my-list-container"></div>
         </section>
+
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="navigate('pg-home', this)"><i class="fas fa-home"></i><br>الرئيسية</div>
+            <div class="nav-item" onclick="loadMyInbox(this)"><div id="chat-notif" class="notif-dot"></div><i class="fas fa-comments"></i><br>الرسائل</div>
+            <div class="nav-item plus-center" onclick="navigate('pg-form')"><i class="fas fa-plus"></i></div>
+            <div class="nav-item" onclick="navigate('pg-profile', this)"><i class="fas fa-shield-alt"></i><br>الأمان</div>
+        </nav>
     </main>
 
-    <nav class="bottom-nav">
-        <div class="nav-item active" onclick="navigate('pg-home', this)"><i class="fas fa-home"></i><br>الرئيسية</div>
-        <div class="nav-item" onclick="loadMyInbox(this)">
-            <div id="chat-notif" class="notif-dot"></div>
-            <i class="fas fa-comments"></i><br>الرسائل
-        </div>
-        <div class="nav-item plus-center" onclick="navigate('pg-form')"><i class="fas fa-plus"></i></div>
-        <div class="nav-item" onclick="navigate('pg-profile', this)"><i class="fas fa-shield-alt"></i><br>الأمان</div>
-    </nav>
+    <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
 
     <script>
         const firebaseConfig = {
@@ -184,25 +179,36 @@
         let currentType = 'lost';
         let currentRoomId = null;
 
-        // خوارزمية التطابق الذكي المحدثة
-        function findMatches(report) {
-            const oppositeType = report.type === 'lost' ? 'found' : 'lost';
-            const stopWords = ["في", "من", "على", "إلى", "عن", "مع", "هذا", "هذه"];
-            const keywords = (report.title + " " + report.desc).toLowerCase()
-                .split(/[\s,._-]+/)
-                .filter(w => w.length > 3 && !stopWords.includes(w));
-
-            return allReports.filter(r => {
-                if (r.type !== oppositeType) return false;
-                const targetText = (r.title + " " + r.desc).toLowerCase();
-                // مطابقة الأرقام الطويلة (شاسي/سيريال)
-                const numbers = (report.title + " " + report.desc).match(/\d{5,}/g) || [];
-                if(numbers.some(num => targetText.includes(num))) return true;
-                // مطابقة الكلمات
-                return keywords.filter(key => targetText.includes(key)).length >= 2;
+        // --- نظام المستخدم المصلح ---
+        function saveUserData() {
+            const name = document.getElementById('user-name-init').value.trim();
+            const phone = document.getElementById('user-phone-init').value.trim();
+            if(name.length < 8 || phone.length < 10) return alert("يرجى إدخال اسمك الرباعي ورقم هاتفك بشكل صحيح");
+            
+            const userData = { name, phone, joined: Date.now() };
+            db.ref('users/' + phone).set(userData).then(() => {
+                localStorage.setItem('sudan_user_data', JSON.stringify(userData));
+                location.reload(); // إعادة التحميل لتنشيط Main App
             });
         }
 
+        function checkUserAuth() {
+            const user = localStorage.getItem('sudan_user_data');
+            if(!user) {
+                document.getElementById('onboarding').style.display = 'flex';
+                document.getElementById('main-app').style.display = 'none';
+            } else {
+                document.getElementById('onboarding').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
+                const u = JSON.parse(user);
+                document.getElementById('profile-name-display').innerText = u.name;
+                document.getElementById('profile-phone-display').innerText = u.phone;
+                loadData();
+            }
+            setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 1500);
+        }
+
+        // --- إدارة البيانات ---
         function loadData() {
             db.ref('reports').on('value', (snap) => {
                 allReports = [];
@@ -230,240 +236,136 @@
                     </div>
                 </div>`;
             });
-            document.getElementById('home-feed').innerHTML = html || "<p style='text-align:center'>لا يوجد بلاغات</p>";
+            document.getElementById('home-feed').innerHTML = html || "<p style='text-align:center; padding:20px;'>لا توجد بلاغات حالياً</p>";
+        }
+
+        // --- المطابقة الذكية والتفاصيل ---
+        function findMatches(report) {
+            const opposite = report.type === 'lost' ? 'found' : 'lost';
+            const keywords = (report.title + " " + report.desc).toLowerCase().split(/\s+/).filter(w => w.length > 3);
+            return allReports.filter(r => {
+                if (r.type !== opposite) return false;
+                const targetText = (r.title + " " + r.desc).toLowerCase();
+                return keywords.filter(k => targetText.includes(k)).length >= 2;
+            });
         }
 
         function viewDetails(id) {
             const item = allReports.find(r => r.id === id);
             const matches = findMatches(item);
-            
-            let matchHtml = "";
-            if(matches.length > 0) {
-                matchHtml = `
+            let matchHtml = matches.length > 0 ? `
                 <div class="match-card" onclick="viewDetails('${matches[0].id}')">
-                    <h4 style="margin:0; color:var(--warning); font-size:12px;"><i class="fas fa-magic"></i> احتمال تطابق! وجدنا "${matches[0].title}"</h4>
-                    <p style="margin:5px 0 0 0; font-size:10px;">اضغط هنا للمعاينة الفورية</p>
-                </div>`;
-            }
+                    <h4 style="margin:0; color:var(--warning); font-size:12px;"><i class="fas fa-magic"></i> احتمال تطابق! اضغط لعرض: ${matches[0].title}</h4>
+                </div>` : "";
 
             document.getElementById('details-view').innerHTML = `
-                <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px"><i class="fas fa-arrow-right" onclick="navigate('pg-home')"></i> <h2>التفاصيل</h2></div>
-                <div class="card" style="padding:0; overflow:hidden;"><img src="${item.img}" style="width:100%; max-height:350px; object-fit:contain; background:#000"></div>
+                <i class="fas fa-arrow-right" onclick="navigate('pg-home')"></i>
+                <div class="card" style="padding:0; overflow:hidden; margin-top:15px"><img src="${item.img}" style="width:100%"></div>
                 ${matchHtml}
                 <div class="card">
                     <span class="badge ${item.type==='lost'?'badge-lost':'badge-found'}">${item.type==='lost'?'مفقود':'موجود'}</span>
-                    <h3 style="margin: 15px 0 10px;">${item.title}</h3>
-                    <p style="font-size:14px; line-height:1.6;">${item.desc}</p>
-                    <hr style="opacity:0.1">
-                    <div style="font-size:11px; color:var(--text-dim)">تاريخ النشر: ${new Date(item.timestamp).toLocaleDateString('ar-EG')}</div>
+                    <h3>${item.title}</h3>
+                    <p>${item.desc}</p>
+                    <div style="font-size:11px; color:var(--text-dim)">الناشر: ${item.uName}</div>
                 </div>
                 <div class="contact-group">
                     <button onclick="window.location.href='tel:${item.phone}'" class="btn-submit btn-call"><i class="fas fa-phone"></i> اتصال</button>
-                    <button onclick="openWhatsApp('${item.phone}')" class="btn-submit btn-wa"><i class="fab fa-whatsapp"></i> واتساب</button>
-                    <button onclick="startInternalChat('${id}')" class="btn-submit btn-chat"><i class="fas fa-comments"></i> دردشة</button>
+                    <button onclick="window.location.href='https://wa.me/249${item.phone.substring(1)}'" class="btn-submit btn-wa"><i class="fab fa-whatsapp"></i> واتساب</button>
+                    <button onclick="startChat('${id}')" class="btn-submit btn-chat"><i class="fas fa-comments"></i> دردشة</button>
                 </div>
-                <button onclick="deleteMyReport('${id}')" style="width:100%; border:none; background:none; color:var(--text-dim); margin-top:30px; font-size:10px;">هل هذا بلاغك؟ حذف البلاغ</button>
             `;
             navigate('pg-details');
         }
 
-        // وظائف الدردشة والمراسلة
-        function openWhatsApp(phone) {
-            let cleanPhone = phone.startsWith('0') ? "249" + phone.substring(1) : phone;
-            window.location.href = "https://wa.me/" + cleanPhone.replace(/\s/g, '');
-        }
-
-        async function startInternalChat(reportId) {
-            const user = JSON.parse(localStorage.getItem('sudan_user_data'));
+        // --- نظام الدردشة المطور ---
+        function startChat(reportId) {
             const item = allReports.find(r => r.id === reportId);
-            if(user.phone === item.phone) return alert("لا يمكنك مراسلة نفسك");
-            
-            // معرف فريد للغرفة يعتمد على (معرف البلاغ + طرفي النزاع مرتبين)
-            const ids = [user.phone, item.phone].sort();
-            const roomId = `chat_${reportId}_${ids[0]}_${ids[1]}`;
-            
-            openChatUI(roomId, item.title);
-        }
-
-        function openChatUI(roomId, title) {
-            currentRoomId = roomId;
             const user = JSON.parse(localStorage.getItem('sudan_user_data'));
-            document.getElementById('chat-title').innerText = title;
+            if(user.phone === item.phone) return alert("هذا بلاغك الخاص");
+            
+            currentRoomId = "chat_" + [user.phone, item.phone].sort().join("_");
+            document.getElementById('chat-title').innerText = item.title;
             navigate('pg-chat');
             
-            db.ref('chats/' + roomId).on('value', (snap) => {
-                let html = "";
+            db.ref('chats/' + currentRoomId).on('value', snap => {
+                let h = "";
                 snap.forEach(c => {
                     const m = c.val();
-                    html += `<div class="msg ${m.sender === user.phone ? 'me' : 'them'}">${m.text}</div>`;
+                    h += `<div class="msg ${m.s === user.phone ? 'me' : 'them'}">${m.t}</div>`;
                 });
                 const box = document.getElementById('chat-messages');
-                box.innerHTML = html;
-                box.scrollTop = box.scrollHeight;
+                box.innerHTML = h; box.scrollTop = box.scrollHeight;
             });
         }
 
         function sendMessage() {
-            const input = document.getElementById('chat-input');
-            const text = input.value.trim();
+            const t = document.getElementById('chat-input').value.trim();
             const user = JSON.parse(localStorage.getItem('sudan_user_data'));
-            if (!text || !currentRoomId) return;
-            
-            db.ref('chats/' + currentRoomId).push({ 
-                sender: user.phone, 
-                senderName: user.name, 
-                text: text, 
-                timestamp: Date.now() 
-            });
-            input.value = "";
+            if(!t || !currentRoomId) return;
+            db.ref('chats/' + currentRoomId).push({ s: user.phone, t: t, time: Date.now() });
+            document.getElementById('chat-input').value = "";
         }
 
         function loadMyInbox(el) {
             const user = JSON.parse(localStorage.getItem('sudan_user_data'));
-            if(!user) return;
-            document.getElementById('chat-notif').style.display = 'none';
             navigate('pg-inbox', el);
-            
-            db.ref('chats').on('value', (snap) => {
-                let html = "";
+            db.ref('chats').on('value', snap => {
+                let h = "";
                 snap.forEach(room => {
-                    if (room.key.includes(user.phone)) {
-                        const msgs = Object.values(room.val());
-                        const last = msgs[msgs.length-1];
-                        const partner = last.sender === user.phone ? "محادثة حول بلاغ" : last.senderName;
-                        html += `
-                        <div class="report-card" onclick="openChatUI('${room.key}', '${partner}')">
-                            <div style="flex:1">
-                                <h4>${partner}</h4>
-                                <p style="font-size:12px; color:var(--text-dim);">${last.text}</p>
-                            </div>
-                        </div>`;
+                    if(room.key.includes(user.phone)) {
+                        const last = Object.values(room.val()).pop();
+                        h += `<div class="report-card" onclick="openRoom('${room.key}')"><h4>محادثة: ${last.t.substring(0,20)}...</h4></div>`;
                     }
                 });
-                document.getElementById('inbox-list-container').innerHTML = html || "<p style='text-align:center; padding:20px;'>لا توجد رسائل نشطة</p>";
+                document.getElementById('inbox-list-container').innerHTML = h || "لا توجد رسائل";
             });
         }
 
-        // التعامل مع الصور والنشر
-        function handleImageSelection(event) {
-            const file = event.target.files[0];
+        // --- الوظائف العامة ---
+        function handleImageSelection(e) {
             const reader = new FileReader();
-            reader.onload = (e) => {
+            reader.onload = (ev) => {
                 const img = new Image();
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    let w = img.width, h = img.height;
-                    if(w > 800) { h = (800/w)*h; w = 800; }
-                    canvas.width = w; canvas.height = h;
-                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    canvas.width = 600; canvas.height = (600/img.width)*img.height;
+                    canvas.getContext('2d').drawImage(img, 0,0,600,canvas.height);
                     base64Image = canvas.toDataURL('image/jpeg', 0.7);
                     document.getElementById('img-preview').src = base64Image;
                     document.getElementById('img-preview').style.display = 'block';
                     document.getElementById('upload-placeholder').style.display = 'none';
                 };
-                img.src = e.target.result;
+                img.src = ev.target.result;
             };
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(e.target.files[0]);
         }
 
         function publishReport() {
             const user = JSON.parse(localStorage.getItem('sudan_user_data'));
-            const title = document.getElementById('inp-title').value.trim();
-            const desc = document.getElementById('inp-desc').value.trim();
+            const title = document.getElementById('inp-title').value;
+            const desc = document.getElementById('inp-desc').value;
             const pin = document.getElementById('inp-pin').value;
-            
-            if(!title || !base64Image || pin.length < 4) return alert("يرجى إكمال البيانات والصورة و PIN");
+            if(!title || !base64Image || pin.length < 4) return alert("أكمل البيانات والصورة و PIN");
             
             db.ref('reports').push({
                 title, desc, phone: user.phone, uName: user.name, pin, img: base64Image, type: currentType, timestamp: Date.now()
-            }).then(() => {
-                alert("تم نشر البلاغ بنجاح");
-                location.reload();
-            });
+            }).then(() => location.reload());
         }
 
-        function deleteMyReport(id) {
-            const item = allReports.find(r => r.id === id);
-            const user = JSON.parse(localStorage.getItem('sudan_user_data'));
-            if(user.phone !== item.phone) return alert("لا يمكنك حذف بلاغ غير تابع لك");
-            const pin = prompt("أدخل رمز PIN الخاص بهذا البلاغ:");
-            if(pin === item.pin) {
-                if(confirm("هل أنت متأكد من الحذف النهائي؟")) {
-                    db.ref('reports').child(id).remove().then(() => {
-                        alert("تم الحذف");
-                        navigate('pg-home');
-                    });
-                }
-            } else alert("رمز PIN غير صحيح");
-        }
-
-        function saveUserData() {
-            const name = document.getElementById('user-name-init').value.trim();
-            const phone = document.getElementById('user-phone-init').value.trim();
-            if(name.length < 10 || phone.length < 10) return alert("أدخل بيانات صحيحة");
-            
-            const userData = {name, phone};
-            localStorage.setItem('sudan_user_data', JSON.stringify(userData));
-            db.ref('users/' + phone).set(userData).then(() => {
-                document.getElementById('onboarding').style.display = 'none';
-                updateProfileUI();
-            });
-        }
-
-        function updateProfileUI() {
-            const user = JSON.parse(localStorage.getItem('sudan_user_data'));
-            if(user) {
-                document.getElementById('profile-name-display').innerText = user.name;
-                document.getElementById('u-phone-display').innerText = user.phone;
-            }
-        }
-
-        function showMyReports() {
-            const user = JSON.parse(localStorage.getItem('sudan_user_data'));
-            const myData = allReports.filter(r => r.phone === user.phone);
-            let html = "";
-            myData.forEach(item => {
-                html += `<div class="report-card" onclick="viewDetails('${item.id}')"><img src="${item.img}"><div><h4>${item.title}</h4></div></div>`;
-            });
-            document.getElementById('my-list-container').innerHTML = html || "<p style='text-align:center'>لا يوجد بلاغات منشورة باسمك</p>";
-            navigate('pg-my-list');
-        }
-
-        function setFormType(type) {
-            currentType = type;
-            document.getElementById('type-lost').style.background = (type === 'lost') ? 'var(--danger)' : 'var(--bg)';
-            document.getElementById('type-lost').style.color = (type === 'lost') ? 'white' : 'var(--danger)';
-            document.getElementById('type-found').style.background = (type === 'found') ? 'var(--accent)' : 'var(--bg)';
-            document.getElementById('type-found').style.color = (type === 'found') ? 'white' : 'var(--accent)';
-        }
-
-        function navigate(pageId, el) {
+        function navigate(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            if(el) {
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                el.classList.add('active');
-            }
-            window.scrollTo(0,0);
+            document.getElementById(id).classList.add('active');
+            if(el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
         }
 
-        function filterFeed(val) {
-            const term = val.toLowerCase();
-            const filtered = allReports.filter(r => r.title.toLowerCase().includes(term) || r.desc.toLowerCase().includes(term));
-            renderFeed(filtered);
+        function filterFeed(v) {
+            const t = v.toLowerCase();
+            renderFeed(allReports.filter(r => r.title.toLowerCase().includes(t) || r.desc.toLowerCase().includes(t)));
         }
 
-        function logout() { if(confirm("هل تريد تسجيل الخروج؟")) { localStorage.clear(); location.reload(); } }
+        function logout() { if(confirm("خروج؟")) { localStorage.clear(); location.reload(); } }
 
-        window.onload = () => {
-            loadData();
-            setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 2000);
-            if(!localStorage.getItem('sudan_user_data')) {
-                document.getElementById('onboarding').style.display = 'flex';
-            } else {
-                updateProfileUI();
-            }
-        };
+        window.onload = checkUserAuth;
     </script>
 </body>
 </html>
