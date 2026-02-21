@@ -198,15 +198,31 @@
 
         // خوارزمية التطابق الذكي
         function findMatches(report) {
-            const oppositeType = report.type === 'lost' ? 'found' : 'lost';
-            const keywords = (report.title + " " + report.desc).toLowerCase().split(/\s+/).filter(w => w.length > 2);
-            
-            return allReports.filter(r => {
-                if (r.type !== oppositeType) return false;
-                const targetText = (r.title + " " + r.desc).toLowerCase();
-                return keywords.some(key => targetText.includes(key));
-            });
-        }
+    const oppositeType = report.type === 'lost' ? 'found' : 'lost';
+    
+    // 1. تنظيف النص وحذف كلمات الحشو
+    const stopWords = ["في", "من", "على", "إلى", "عن", "مع", "هذا", "هذه", "تم", "فقدان", "وجدت"];
+    const keywords = (report.title + " " + report.desc)
+        .toLowerCase()
+        .split(/[\s,._-]+/)
+        .filter(w => w.length > 3 && !stopWords.includes(w)); // الكلمات التي طولها أكثر من 3 أحرف فقط
+
+    return allReports.filter(r => {
+        if (r.type !== oppositeType) return false;
+        
+        const targetText = (r.title + " " + r.desc).toLowerCase();
+        
+        // 2. البحث عن الأرقام الطويلة (شاسي/سيريال) كأولوية قصوى
+        const numbers = (report.title + " " + report.desc).match(/\d{5,}/g) || [];
+        const hasNumberMatch = numbers.some(num => targetText.includes(num));
+        if(hasNumberMatch) return true; // مطابقة فورية إذا تطابق الرقم التسلسلي
+
+        // 3. حساب عدد الكلمات المشتركة (يجب أن تكون 2 فأكثر)
+        const matchCount = keywords.filter(key => targetText.includes(key)).length;
+        return matchCount >= 2; 
+    });
+}
+
 
         function loadData() {
             db.ref('reports').on('value', (snap) => {
@@ -455,14 +471,24 @@
         }
 
         function saveUserData() {
-            const name = document.getElementById('user-name-init').value.trim();
-            const phone = document.getElementById('user-phone-init').value.trim();
-            if(name.length < 10 || phone.length < 10) return alert("أدخل اسمك الرباعي ورقم هاتف صحيح");
-            localStorage.setItem('sudan_user_data', JSON.stringify({name, phone}));
-            document.getElementById('onboarding').style.display = 'none';
-            updateProfileUI();
-            watchNewMessages();
-        }
+    const name = document.getElementById('user-name-init').value.trim();
+    const phone = document.getElementById('user-phone-init').value.trim();
+    
+    if(name.length < 10 || phone.length < 10) return alert("أدخل اسمك الرباعي ورقم هاتف صحيح");
+
+    // حفظ في قاعدة البيانات للرقابة
+    db.ref('users/' + phone).set({
+        name: name,
+        phone: phone,
+        isBanned: false,
+        joinDate: Date.now()
+    }).then(() => {
+        localStorage.setItem('sudan_user_data', JSON.stringify({name, phone}));
+        document.getElementById('onboarding').style.display = 'none';
+        location.reload();
+    });
+}
+
 
         function updateProfileUI() {
             const user = JSON.parse(localStorage.getItem('sudan_user_data'));
@@ -500,6 +526,40 @@
                 watchNewMessages();
             }
         };
+        
+        function checkUserStatus(action) {
+    const user = JSON.parse(localStorage.getItem('sudan_user_data'));
+    return db.ref('users/' + user.phone).once('value').then(snap => {
+        const userData = snap.val();
+        if (userData && userData.isBanned) {
+            alert("تم حظر حسابك نهائياً من قبل الإدارة لمخالفة القوانين.");
+            return false; // المستخدم محظور
+        }
+        return true; // المستخدم سليم
+    });
+}
+
+// تعديل دالة إرسال الرسائل
+async function sendMessage() {
+    const isAllowed = await checkUserStatus();
+    if(!isAllowed) return; // توقف إذا كان محظوراً
+    
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    const user = JSON.parse(localStorage.getItem('sudan_user_data'));
+    if (!text || !currentRoomId) return;
+    
+    db.ref('chats/' + currentRoomId).push({ 
+        sender: user.phone, 
+        senderName: user.name, 
+        text: text, 
+        timestamp: Date.now() 
+    });
+    input.value = "";
+}
+
     </script>
 </body>
 </html>
+
+
