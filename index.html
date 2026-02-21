@@ -518,14 +518,26 @@
         function logout() { if(confirm("خروج؟")) { localStorage.clear(); location.reload(); } }
 
         window.onload = () => {
-            loadData();
-            setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 2000);
-            if(!localStorage.getItem('sudan_user_data')) document.getElementById('onboarding').style.display = 'flex';
-            else {
-                updateProfileUI();
-                watchNewMessages();
-            }
-        };
+    // محاولة تحميل البيانات
+    try {
+        loadData();
+    } catch(e) {
+        console.error("Firebase connection failed");
+    }
+    
+    // إخفاء السبلاش مهما حدث بعد 3 ثوانٍ لضمان دخول المستخدم
+    setTimeout(() => { 
+        document.getElementById('splash').style.display = 'none'; 
+    }, 3000);
+
+    if(!localStorage.getItem('sudan_user_data')) {
+        document.getElementById('onboarding').style.display = 'flex';
+    } else {
+        updateProfileUI();
+        watchNewMessages();
+    }
+};
+
         
         function checkUserStatus(action) {
     const user = JSON.parse(localStorage.getItem('sudan_user_data'));
