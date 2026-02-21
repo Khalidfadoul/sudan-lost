@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>مفقودات السودان 2026</title>
+    <title>مفقودات السودان - النسخة الشاملة 2026</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -27,40 +27,46 @@
         .btn-submit:active { box-shadow: var(--inner-shadow); transform: scale(0.98); }
         
         .report-card { background: var(--bg); padding: 12px; border-radius: 22px; box-shadow: var(--shadow); display: flex; gap: 15px; margin-bottom: 15px; cursor: pointer; align-items: center; }
-        .report-card img { width: 85px; height: 85px; border-radius: 18px; object-fit: cover; }
+        .report-card img { width: 85px; height: 85px; border-radius: 18px; object-fit: cover; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); }
         
         .badge { padding: 4px 12px; border-radius: 10px; font-size: 11px; font-weight: bold; }
         .badge-lost { background: #ffdada; color: #c0392b; }
         .badge-found { background: #d4f8e2; color: #27ae60; }
 
         .notif-dot { position: absolute; top: 10px; right: 25%; width: 10px; height: 10px; background: var(--danger); border-radius: 50%; border: 2px solid var(--bg); display: none; }
-        .match-card { background: #fff9e6; border: 2px dashed var(--warning); border-radius: 20px; padding: 15px; margin: 15px 0; }
+        
+        /* التنبيه الذكي المطور والقابل للضغط */
+        .match-card-alert { background: #fff9e6; border: 2px dashed var(--warning); border-radius: 20px; padding: 15px; margin: 15px 0; cursor: pointer; animation: pulse-border 2s infinite; }
+        @keyframes pulse-border { 0% { border-color: var(--warning); } 50% { border-color: transparent; } 100% { border-color: var(--warning); } }
 
         .bottom-nav { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 480px; height: 70px; background: rgba(242, 245, 248, 0.95); backdrop-filter: blur(15px); border-radius: 35px; display: flex; justify-content: space-around; align-items: center; box-shadow: var(--shadow); z-index: 1000; border: 1px solid #fff; }
-        .nav-item { color: var(--text-dim); text-align: center; font-size: 10px; flex: 1; cursor: pointer; position: relative; }
+        .nav-item { color: var(--text-dim); text-align: center; font-size: 10px; flex: 1; cursor: pointer; transition: 0.3s; position: relative; }
         .nav-item.active { color: var(--accent); }
         .plus-center { width: 55px; height: 55px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white !important; margin-top: -40px; border: 4px solid var(--bg); font-size: 22px; box-shadow: 0 8px 15px rgba(39, 174, 96, 0.3); }
 
         #chat-messages { height: calc(100vh - 250px); overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .msg { padding: 12px 16px; border-radius: 18px; max-width: 85%; font-size: 14px; box-shadow: var(--shadow); }
+        .msg { padding: 12px 16px; border-radius: 18px; max-width: 85%; font-size: 14px; box-shadow: var(--shadow); line-height: 1.5; }
         .msg.me { align-self: flex-start; background: var(--accent); color: white; border-bottom-right-radius: 4px; }
         .msg.them { align-self: flex-end; background: white; color: var(--text); border-bottom-left-radius: 4px; }
 
-        #splash { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
         input, textarea { width: 100%; padding: 15px; border-radius: 15px; border: none; box-shadow: var(--inner-shadow); background: var(--bg); margin-bottom: 15px; color: var(--text); }
+        
+        /* أزرار التواصل الملونة */
+        .btn-wa { background: #25D366 !important; color: white !important; }
+        .btn-call { background: #3498db !important; color: white !important; }
+        .btn-chat-internal { background: var(--text) !important; color: white !important; }
     </style>
 </head>
 <body>
 
-    <div id="splash">
+    <div id="splash" style="position:fixed; inset:0; background:var(--bg); z-index:10000; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
         <i class="fas fa-shield-alt" style="font-size: 60px; color: var(--accent);"></i>
         <h2 style="margin-top: 20px;">مفقودات السودان 2026<br><span style="font-size: 14px; color: var(--text-dim);">المنصة الأمنية الموحدة</span></h2>
     </div>
 
-    <div id="onboarding" style="display:none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 9000; display: flex; align-items: center; justify-content: center; padding: 20px;">
+    <div id="onboarding" style="display:none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9000; align-items: center; justify-content: center; padding: 20px;">
         <div class="card" style="max-width: 400px; width: 100%;">
             <h3 style="text-align:center">التسجيل القانوني</h3>
-            <p style="font-size: 12px; text-align: center; color: var(--text-dim);">يجب إدخال بيانات حقيقية لتجنب الحظر</p>
             <input type="text" id="user-name-init" placeholder="الاسم الرباعي الرسمي">
             <input type="tel" id="user-phone-init" placeholder="رقم الهاتف">
             <button class="btn-submit" onclick="saveUserData()">موافقة وتسجيل</button>
@@ -69,35 +75,45 @@
 
     <main id="main-app">
         <section id="pg-home" class="page active">
-            <div class="stats-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                <div class="stat-card" style="background: var(--bg); padding: 15px; border-radius: 20px; text-align: center; box-shadow: var(--inner-shadow);">
-                    <h2 id="count-lost" style="color: var(--danger); margin: 0;">0</h2><span style="font-size: 12px;">مفقود</span>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                <div class="card" style="text-align: center; margin-bottom:0">
+                    <h2 id="count-lost" style="color: var(--danger); margin: 0;">0</h2><small>مفقود</small>
                 </div>
-                <div class="stat-card" style="background: var(--bg); padding: 15px; border-radius: 20px; text-align: center; box-shadow: var(--inner-shadow);">
-                    <h2 id="count-found" style="color: var(--accent); margin: 0;">0</h2><span style="font-size: 12px;">موجود</span>
+                <div class="card" style="text-align: center; margin-bottom:0">
+                    <h2 id="count-found" style="color: var(--accent); margin: 0;">0</h2><small>موجود</small>
                 </div>
             </div>
-            <input type="text" placeholder="بحث..." oninput="filterFeed(this.value)" style="border-radius:50px">
+            <input type="text" placeholder="بحث بالاسم أو النوع..." oninput="filterFeed(this.value)">
             <div id="home-feed"></div>
         </section>
 
-        <section id="pg-details" class="page"><div id="details-view"></div></section>
+        <section id="pg-details" class="page">
+            <div id="details-view"></div>
+        </section>
 
         <section id="pg-profile" class="page">
             <div class="card" style="text-align: center;">
-                <h3 class="u-name">تحميل...</h3>
+                <h3 id="u-name-display">جاري التحميل...</h3>
                 <p id="u-phone-display" style="color:var(--text-dim);"></p>
-                <div style="font-size: 10px; color: var(--accent); border: 1px solid var(--accent); padding: 5px; border-radius: 10px; display:inline-block;">هوية موثقة رقمياً</div>
+                <div style="font-size: 10px; color: var(--accent); border: 1px solid var(--accent); padding: 5px; border-radius: 10px; display:inline-block;">هوية موثقة</div>
             </div>
+            
+            <div class="card" style="border-right: 5px solid var(--danger);">
+                <h4 style="color:var(--danger); margin-top:0;"><i class="fas fa-balance-scale"></i> إخلاء مسؤولية قانوني</h4>
+                <p style="font-size: 12px; line-height: 1.6;">1. المنصة وسيط تقني؛ نرجو التأكد يدوياً من المفقودات قبل أي إجراء.</p>
+                <p style="font-size: 12px; line-height: 1.6;">2. <b>تحذير:</b> لا تدفع مكافآت أو رسوم توصيل عبر تطبيقات البنوك قبل المعاينة.</p>
+                <p style="font-size: 12px; line-height: 1.6;">3. يتم تسجيل رقم هاتفك وهويتك؛ البلاغات الكاذبة تعرضك للمساءلة القانونية.</p>
+            </div>
+
             <button class="btn-submit" onclick="showMyReports()"><i class="fas fa-folder-open"></i> إدارة بلاغاتي</button>
-            <button class="btn-submit" style="color:var(--danger); box-shadow:none;" onclick="logout()">تسجيل الخروج</button>
+            <button class="btn-submit" style="color:var(--danger); margin-top:20px;" onclick="logout()">تسجيل الخروج</button>
         </section>
 
         <section id="pg-form" class="page">
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px"><i class="fas fa-arrow-right" onclick="navigate('pg-home')"></i> <h2>بلاغ جديد</h2></div>
             <div class="card" style="height:200px; display:flex; align-items:center; justify-content:center; overflow:hidden;" onclick="document.getElementById('file-input').click()">
                 <img id="img-preview" style="width:100%; height:100%; object-fit:contain; display:none">
-                <div id="upload-placeholder" style="text-align:center;"><i class="fas fa-camera" style="font-size:40px; color: var(--accent)"></i><br>ارفق صورة</div>
+                <div id="upload-placeholder"><i class="fas fa-camera" style="font-size:40px; color: var(--accent)"></i><br>ارفق صورة</div>
                 <input type="file" id="file-input" hidden onchange="handleImageSelection(event)">
             </div>
             <div style="display:flex; gap:10px; margin-bottom:15px;">
@@ -105,28 +121,40 @@
                 <button id="type-found" onclick="setFormType('found')" class="btn-submit">موجود</button>
             </div>
             <input type="text" id="inp-title" placeholder="عنوان البلاغ">
-            <textarea id="inp-desc" placeholder="وصف دقيق..."></textarea>
+            <textarea id="inp-desc" placeholder="وصف دقيق (رقم شاسي، مكان، زمان)"></textarea>
             <input type="number" id="inp-pin" placeholder="رمز PIN للحذف (4 أرقام)">
-            <button class="btn-submit" style="background:var(--accent); color:white;" onclick="publishReport()">نشر الآن</button>
+            <button class="btn-submit" style="background:var(--accent); color:white;" onclick="publishReport()">نشر البلاغ</button>
         </section>
 
         <section id="pg-chat" class="page">
             <div style="display:flex; align-items:center; gap:15px; margin-bottom:15px;">
-                <i class="fas fa-arrow-right" onclick="navigate('pg-home')"></i><h4 id="chat-title" style="margin:0">دردشة</h4>
+                <i class="fas fa-arrow-right" onclick="navigate('pg-inbox')"></i>
+                <h4 id="chat-title" style="margin:0">دردشة</h4>
             </div>
             <div id="chat-messages"></div>
-            <div style="display:flex; gap:10px;">
-                <input type="text" id="chat-input" placeholder="اكتب رسالتك..." style="margin:0">
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <input type="text" id="chat-input" placeholder="اكتب رسالتك...">
                 <button onclick="sendMessage()" style="width:60px; border-radius:15px; border:none; background:var(--accent); color:white;"><i class="fas fa-paper-plane"></i></button>
             </div>
         </section>
 
-        <section id="pg-my-list" class="page"><div id="my-list-container"></div></section>
+        <section id="pg-inbox" class="page">
+            <h2>المحادثات</h2>
+            <div id="inbox-list"></div>
+        </section>
+
+        <section id="pg-my-list" class="page">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px"><i class="fas fa-arrow-right" onclick="navigate('pg-profile')"></i> <h2>بلاغاتي</h2></div>
+            <div id="my-list-container"></div>
+        </section>
     </main>
 
     <nav class="bottom-nav">
         <div class="nav-item active" onclick="navigate('pg-home', this)"><i class="fas fa-home"></i><br>الرئيسية</div>
-        <div class="nav-item" onclick="loadMyInbox(this)"><div id="chat-notif" class="notif-dot"></div><i class="fas fa-comments"></i><br>الرسائل</div>
+        <div class="nav-item" onclick="loadMyInbox(this)">
+            <div id="chat-notif" class="notif-dot"></div>
+            <i class="fas fa-comments"></i><br>الرسائل
+        </div>
         <div class="nav-item plus-center" onclick="navigate('pg-form')"><i class="fas fa-plus"></i></div>
         <div class="nav-item" onclick="navigate('pg-profile', this)"><i class="fas fa-shield-alt"></i><br>الأمان</div>
     </nav>
@@ -147,40 +175,19 @@
         let currentType = 'lost';
         let currentRoomId = null;
 
-        // --- نظام التشغيل ---
-        window.onload = () => {
-            const userData = localStorage.getItem('sudan_user_data');
-            if (userData) {
-                document.getElementById('onboarding').style.display = 'none';
-                updateProfileUI();
-                watchNewMessages();
-            } else {
-                setTimeout(() => { document.getElementById('onboarding').style.display = 'flex'; }, 3000);
-            }
-            loadData();
-            setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 2500);
-        };
-
-        function saveUserData() {
-            const name = document.getElementById('user-name-init').value.trim();
-            const phone = document.getElementById('user-phone-init').value.trim();
-            if(name.length < 10 || phone.length < 10) return alert("البيانات غير كافية");
-            
-            db.ref('users/' + phone).set({ name, phone, isBanned: false, joinDate: Date.now() }).then(() => {
-                localStorage.setItem('sudan_user_data', JSON.stringify({name, phone}));
-                location.reload();
+        // خوارزمية التطابق الذكي
+        function findMatches(report) {
+            const oppositeType = report.type === 'lost' ? 'found' : 'lost';
+            const keywords = (report.title + " " + report.desc).toLowerCase().split(/\s+/).filter(w => w.length > 3);
+            return allReports.filter(r => {
+                if (r.type !== oppositeType) return false;
+                const targetText = (r.title + " " + r.desc).toLowerCase();
+                const nums = cleanText(report.title + report.desc).match(/\d{5,}/g) || [];
+                if(nums.some(n => targetText.includes(n))) return true;
+                return keywords.filter(k => targetText.includes(k)).length >= 2;
             });
         }
-
-        function navigate(pageId, el) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            if(el) {
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                el.classList.add('active');
-            }
-            window.scrollTo(0,0);
-        }
+        function cleanText(t){ return t.replace(/[^\d]/g,''); }
 
         function loadData() {
             db.ref('reports').on('value', (snap) => {
@@ -200,112 +207,150 @@
         function renderFeed(data) {
             let html = "";
             data.forEach(item => {
-                html += `<div class="report-card" onclick="viewDetails('${item.id}')">
-                    <img src="${item.img}"><div style="flex:1"><h4>${item.title}</h4>
-                    <span class="badge ${item.type==='lost'?'badge-lost':'badge-found'}">${item.type==='lost'?'مفقود':'موجود'}</span></div></div>`;
+                html += `
+                <div class="report-card" onclick="viewDetails('${item.id}')">
+                    <img src="${item.img}">
+                    <div style="flex:1">
+                        <h4>${item.title}</h4>
+                        <span class="badge ${item.type==='lost'?'badge-lost':'badge-found'}">${item.type==='lost'?'مفقود':'موجود'}</span>
+                    </div>
+                </div>`;
             });
             document.getElementById('home-feed').innerHTML = html || "<p style='text-align:center'>لا يوجد بلاغات</p>";
         }
 
         function viewDetails(id) {
             const item = allReports.find(r => r.id === id);
+            const matches = findMatches(item);
+            
+            let matchHtml = "";
+            if(matches.length > 0) {
+                matchHtml = `
+                <div class="match-card-alert" onclick="viewDetails('${matches[0].id}')">
+                    <h4 style="margin:0; color:var(--warning); font-size:13px;"><i class="fas fa-magic"></i> تم العثور على تطابق ذكي!</h4>
+                    <p style="margin:5px 0 0 0; font-size:11px;">اضغط هنا لعرض البلاغ: ${matches[0].title}</p>
+                </div>`;
+            }
+
             document.getElementById('details-view').innerHTML = `
-                <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px"><i class="fas fa-arrow-right" onclick="navigate('pg-home')"></i> <h2>التفاصيل</h2></div>
-                <div class="card" style="padding:0; overflow:hidden;"><img src="${item.img}" style="width:100%; max-height:350px; object-fit:contain; background:#000"></div>
+                <i class="fas fa-arrow-right" style="font-size:20px" onclick="navigate('pg-home')"></i>
+                <div class="card" style="padding:0; overflow:hidden; margin-top:15px;"><img src="${item.img}" style="width:100%; max-height:400px; object-fit:contain; background:#000"></div>
+                ${matchHtml}
                 <div class="card">
                     <span class="badge ${item.type==='lost'?'badge-lost':'badge-found'}">${item.type==='lost'?'مفقود':'موجود'}</span>
-                    <h3>${item.title}</h3><p>${item.desc}</p>
+                    <h3>${item.title}</h3>
+                    <p>${item.desc}</p>
+                    <hr style="opacity:0.1">
+                    <small>الناشر: ${item.uName || 'مستخدم المنصة'}</small>
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
-                    <button onclick="contactAction('tel', '${item.phone}')" class="btn-submit" style="background:var(--accent); color:white;"><i class="fas fa-phone"></i></button>
-                    <button onclick="contactAction('wa', '${item.phone}')" class="btn-submit" style="background:#25D366; color:white;"><i class="fab fa-whatsapp"></i></button>
-                    <button onclick="startChat('${id}')" class="btn-submit" style="background:var(--text); color:white;"><i class="fas fa-comments"></i></button>
-                </div>`;
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                    <button onclick="window.location.href='tel:${item.phone}'" class="btn-submit btn-call"><i class="fas fa-phone"></i> اتصال</button>
+                    <button onclick="window.location.href='https://wa.me/249${item.phone.substring(1)}'" class="btn-submit btn-wa"><i class="fab fa-whatsapp"></i> واتساب</button>
+                </div>
+                <button onclick="startChat('${id}')" class="btn-submit btn-chat-internal"><i class="fas fa-comments"></i> دردشة داخلية</button>
+            `;
             navigate('pg-details');
         }
 
-        function contactAction(type, phone) {
-            if (type === 'tel') window.location.href = "tel:" + phone;
-            else window.location.href = "https://wa.me/249" + phone.substring(1);
-        }
-
-        async function checkUserStatus() {
+        // باقي الوظائف (Chat, Inbox, Publish, Image)
+        async function checkBan() {
             const user = JSON.parse(localStorage.getItem('sudan_user_data'));
-            const snap = await db.ref('users/' + user.phone).once('value');
-            if (snap.val()?.isBanned) { alert("تم حظرك!"); logout(); return false; }
-            return true;
+            if(!user) return false;
+            const s = await db.ref('users/' + user.phone + '/isBanned').get();
+            if(s.val() === true) { alert("حسابك محظور"); return true; }
+            return false;
         }
 
         async function startChat(reportId) {
-            if (!(await checkUserStatus())) return;
+            if(await checkBan()) return;
             const item = allReports.find(r => r.id === reportId);
             const user = JSON.parse(localStorage.getItem('sudan_user_data'));
-            if (user.phone === item.phone) return alert("هذا بلاغك");
-            const ids = [user.phone, item.phone].sort();
-            openChatBox(`chat_${reportId}_${ids[0]}_${ids[1]}`, item.title);
-        }
-
-        function openChatBox(roomId, title) {
-            currentRoomId = roomId;
-            const user = JSON.parse(localStorage.getItem('sudan_user_data'));
-            document.getElementById('chat-title').innerText = title;
+            if (user.phone === item.phone) return alert("هذا بلاغك الخاص");
+            currentRoomId = [user.phone, item.phone].sort().join("_");
+            document.getElementById('chat-title').innerText = item.title;
             navigate('pg-chat');
-            db.ref('chats/' + roomId).on('value', (snap) => {
-                let html = "";
+            db.ref('chats/' + currentRoomId).on('value', (snap) => {
+                let h = "";
                 snap.forEach(c => {
                     const m = c.val();
-                    html += `<div class="msg ${m.sender === user.phone ? 'me' : 'them'}">${m.text}</div>`;
+                    h += `<div class="msg ${m.s === user.phone ? 'me' : 'them'}">${m.t}</div>`;
                 });
-                const box = document.getElementById('chat-messages');
-                box.innerHTML = html; box.scrollTop = box.scrollHeight;
+                document.getElementById('chat-messages').innerHTML = h;
+                document.getElementById('chat-messages').scrollTop = 9999;
             });
         }
 
-        async function sendMessage() {
-            if (!(await checkUserStatus())) return;
-            const input = document.getElementById('chat-input');
+        function sendMessage() {
+            const t = document.getElementById('chat-input').value.trim();
             const user = JSON.parse(localStorage.getItem('sudan_user_data'));
-            if (!input.value.trim()) return;
-            db.ref('chats/' + currentRoomId).push({ sender: user.phone, senderName: user.name, text: input.value, timestamp: Date.now() });
-            input.value = "";
+            if (!t || !currentRoomId) return;
+            db.ref('chats/' + currentRoomId).push({ s: user.phone, t: t, time: Date.now() });
+            document.getElementById('chat-input').value = "";
         }
 
-        function handleImageSelection(event) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                base64Image = e.target.result;
-                document.getElementById('img-preview').src = base64Image;
-                document.getElementById('img-preview').style.display = 'block';
-                document.getElementById('upload-placeholder').style.display = 'none';
-            };
-            reader.readAsDataURL(event.target.files[0]);
-        }
-
-        async function publishReport() {
-            if (!(await checkUserStatus())) return;
+        function publishReport() {
             const user = JSON.parse(localStorage.getItem('sudan_user_data'));
-            const title = document.getElementById('inp-title').value;
+            const title = document.getElementById('inp-title').value.trim();
+            const desc = document.getElementById('inp-desc').value.trim();
             const pin = document.getElementById('inp-pin').value;
-            if(!title || !base64Image || pin.length < 4) return alert("أكمل البيانات");
-            
-            db.ref('reports').push({ title, desc: document.getElementById('inp-desc').value, phone: user.phone, pin, img: base64Image, type: currentType, timestamp: Date.now() })
-            .then(() => { alert("تم النشر"); location.reload(); });
+            if(!title || !base64Image || pin.length < 4) return alert("يرجى إكمال البيانات");
+            db.ref('reports').push({ title, desc, phone: user.phone, uName: user.name, pin, img: base64Image, type: currentType, timestamp: Date.now() })
+            .then(() => location.reload());
         }
 
-        function updateProfileUI() {
-            const user = JSON.parse(localStorage.getItem('sudan_user_data'));
-            if(user) {
-                document.querySelectorAll('.u-name').forEach(el => el.innerText = user.name);
-                document.getElementById('u-phone-display').innerText = user.phone;
+        function handleImageSelection(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let w = 800; let h = (w/img.width)*img.height;
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img,0,0,w,h);
+                    base64Image = canvas.toDataURL('image/jpeg', 0.7);
+                    document.getElementById('img-preview').src = base64Image;
+                    document.getElementById('img-preview').style.display = 'block';
+                    document.getElementById('upload-placeholder').style.display = 'none';
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveUserData() {
+            const name = document.getElementById('user-name-init').value.trim();
+            const phone = document.getElementById('user-phone-init').value.trim();
+            if(name.length < 12 || phone.length < 10) return alert("أدخل بياناتك الرسمية");
+            db.ref('users/' + phone).set({ name, phone, isBanned: false }).then(() => {
+                localStorage.setItem('sudan_user_data', JSON.stringify({name, phone}));
+                location.reload();
+            });
+        }
+
+        function navigate(id, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
+            if(id === 'pg-profile') {
+                const u = JSON.parse(localStorage.getItem('sudan_user_data'));
+                document.getElementById('u-name-display').innerText = u.name;
+                document.getElementById('u-phone-display').innerText = u.phone;
             }
         }
 
-        function logout() { localStorage.clear(); location.reload(); }
-        function setFormType(t) { currentType = t; }
-        function filterFeed(val) {
-            const term = val.toLowerCase();
-            renderFeed(allReports.filter(r => r.title.toLowerCase().includes(term)));
+        function filterFeed(v) {
+            const t = v.toLowerCase();
+            renderFeed(allReports.filter(r => r.title.toLowerCase().includes(t) || r.desc.toLowerCase().includes(t)));
         }
+
+        function logout() { if(confirm("خروج؟")) { localStorage.clear(); location.reload(); } }
+
+        window.onload = () => {
+            loadData();
+            if(!localStorage.getItem('sudan_user_data')) document.getElementById('onboarding').style.display = 'flex';
+            setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 2000);
+        };
     </script>
 </body>
 </html>
